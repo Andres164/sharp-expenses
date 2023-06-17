@@ -3,10 +3,10 @@
 <PageTitle>Registrar gasto</PageTitle>
 
 <div id="header"></div>
-<main class="container">
-<h1>Informacion del gasto</h1>
+<div class="container">
+    <h1>Informacion del gasto</h1>
 
-    <EditForm Model="@ExpenseModel" OnValidSubmit="@HandleValidSubmit" class="shadow p-3 mb-5 bg-body rounded">
+    <EditForm Model="@ExpenseModel" OnValidSubmit="@HandleValidSubmit" class="shadow p-3 mb-5 rounded">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -38,21 +38,31 @@
     </div>
 
     <div class="form-group">
-        <label for="Date">Fecha en que se realizo el gasto</label>
+        <label for="Date">Fecha</label>
         <InputDate id="Date" @bind-Value="ExpenseModel.Date" class="form-control" />
+
+        <label for="Time">Hora</label>
+        <InputText id="Time" @bind-Value="time" @onchange="UpdateTime" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label for="Notes">Notas</label>
-        <InputTextArea id="Notes" @bind-Value="ExpenseModel.Notes" class="form-control" />
+            <label for="Description">Descripcion</label>
+            <InputTextArea id="Description" @bind-Value="ExpenseModel.Description" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
-</main>
+</div>
 
 @code {
     private Expense ExpenseModel = new Expense();
+    private string time = DateTime.Now.ToString("HH:mm");
+
+    private void UpdateTime(ChangeEventArgs e)
+    {
+        if (TimeSpan.TryParse(e.Value!.ToString(), out TimeSpan timeSpan))
+            ExpenseModel.Date = ExpenseModel.Date.Date + timeSpan;
+    }
 
     private void HandleValidSubmit()
     {
@@ -63,10 +73,11 @@
     {
         public string Type { get; set; }
         public string Importance { get; set; }
+        [EditorRequired]
         public string Category { get; set; }
-        public decimal AmountSpent { get; set; }
-        public DateOnly Date { get; set; }
-        public string Notes { get; set; }
+        public decimal AmountSpent { get; set; } = 0.1M;
+        public DateTime Date { get; set; } = DateTime.Now;
+        public string Description { get; set; }
     }
 }
 
