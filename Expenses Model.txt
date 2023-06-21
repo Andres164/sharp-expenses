@@ -1,6 +1,0 @@
-Type : it could be. Personal or Buissines
-Importance: the necessity fo the expense, if it is essential, non essential or a luxury
-Category: a descriptor for the expense, like grocery, clothing, travel
-AmountSpent: money spent in this expense
-Date: Date of the aquisition
-Notes: extra notes for the user, like why He buought this or aquired that service

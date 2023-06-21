@@ -1,5 +1,7 @@
 ﻿@page "/registerExpense"
 
+@using SharedModels.Models
+
 <PageTitle>Registrar gasto</PageTitle>
 
 <div id="header"></div>
@@ -29,7 +31,9 @@
 
     <div class="form-group">
         <label for="Category">Categoria</label>
-        <InputText id="Category" @bind-Value="ExpenseModel.Category" class="form-control" />
+        <InputSelect id="Category" @bind-Value="ExpenseModel.CategoryId" class="form-control">
+            <option value=0>Categoria 1</option>
+        </InputSelect>
     </div>
 
     <div class="form-group">
@@ -69,15 +73,7 @@
         
     }
 
-    public class Expense
-    {
-        public string Type { get; set; }
-        public string Importance { get; set; }
-        [EditorRequired]
-        public string Category { get; set; }
-        public decimal AmountSpent { get; set; } = 0.1M;
-        public DateTime Date { get; set; } = DateTime.Now;
-        public string Description { get; set; }
-    }
+    // This needs to be in its own class
+
 }
 
