@@ -11,9 +11,9 @@ namespace SharpExpenses.Services
         private readonly HttpClient _httpClient;
         private const string _ControllerEndpoint = "api/Expenses";
 
-        public ExpensesService(HttpClient httpClient) 
+        public ExpensesService(IHttpClientFactory clientFactory) 
         {
-            this._httpClient = httpClient;
+            this._httpClient = clientFactory.CreateClient("API"); ;
         }
 
 

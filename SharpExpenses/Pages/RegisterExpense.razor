@@ -1,6 +1,8 @@
 ﻿@page "/registerExpense"
 
 @using SharedModels.Models
+@using SharedModels.Models.RequestModels;
+@using SharpExpenses.Services.Contracts;
 
 <PageTitle>Registrar gasto</PageTitle>
 
@@ -8,13 +10,13 @@
 <div class="container">
     <h1>Informacion del gasto</h1>
 
-    <EditForm Model="@ExpenseModel" OnValidSubmit="@HandleValidSubmit" class="shadow p-3 mb-5 rounded">
+    <EditForm Model="@newExpense" OnValidSubmit="@HandleValidSubmit" class="shadow p-3 mb-5 rounded">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="form-group">
         <label for="Type">Tipo de gasto</label>
-        <InputSelect id="Type" @bind-Value="ExpenseModel.Type" class="form-control">
+        <InputSelect id="Type" @bind-Value="newExpense.Type" class="form-control">
             <option value="Personal">Personal</option>
             <option value="Business">Trabajo</option>
         </InputSelect>
@@ -22,7 +24,7 @@
 
     <div class="form-group">
         <label for="Importance">Necesidad</label>
-        <InputSelect id="Importance" @bind-Value="ExpenseModel.Importance" class="form-control">
+        <InputSelect id="Importance" @bind-Value="newExpense.Importance" class="form-control">
             <option value="Essential">Esensial</option>
             <option value="NonEssential">No esensial</option>
             <option value="Luxury">Lujo</option>
@@ -31,19 +33,19 @@
 
     <div class="form-group">
         <label for="Category">Categoria</label>
-        <InputSelect id="Category" @bind-Value="ExpenseModel.CategoryId" class="form-control">
-            <option value=0>Categoria 1</option>
+        <InputSelect id="Category" @bind-Value="newExpense.CategoryId" class="form-control">
+            <option value=1>Categoria 1</option>
         </InputSelect>
     </div>
 
     <div class="form-group">
         <label for="AmountSpent">Cantidad gastada</label>
-        <InputNumber id="AmountSpent" min="0.1" step="0.1" @bind-Value="ExpenseModel.AmountSpent" class="form-control" />
+        <InputNumber id="AmountSpent" min="0.1" step="0.1" @bind-Value="newExpense.AmountSpent" class="form-control" />
     </div>
 
     <div class="form-group">
         <label for="Date">Fecha</label>
-        <InputDate id="Date" @bind-Value="ExpenseModel.Date" class="form-control" />
+        <InputDate id="Date" @bind-Value="newExpense.Date" class="form-control" />
 
         <label for="Time">Hora</label>
         <InputText id="Time" @bind-Value="time" @onchange="UpdateTime" class="form-control" />
@@ -51,7 +53,7 @@
 
     <div class="form-group">
             <label for="Description">Descripcion</label>
-            <InputTextArea id="Description" @bind-Value="ExpenseModel.Description" class="form-control" />
+            <InputTextArea id="Description" @bind-Value="newExpense.Description" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
@@ -59,21 +61,22 @@
 </div>
 
 @code {
-    private Expense ExpenseModel = new Expense();
+    private ExpenseRequest newExpense = new ExpenseRequest();
     private string time = DateTime.Now.ToString("HH:mm");
+
+    [Inject]
+    public IExpensesService ExpensesService { get; set; } = null!;
+
 
     private void UpdateTime(ChangeEventArgs e)
     {
         if (TimeSpan.TryParse(e.Value!.ToString(), out TimeSpan timeSpan))
-            ExpenseModel.Date = ExpenseModel.Date.Date + timeSpan;
+            newExpense.Date = newExpense.Date.Date + timeSpan;
     }
 
     private void HandleValidSubmit()
     {
-        
+        this.ExpensesService.Create(newExpense);
     }
-
-    // This needs to be in its own class
-
 }
 
