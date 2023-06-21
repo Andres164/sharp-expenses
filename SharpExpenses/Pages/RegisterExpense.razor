@@ -3,6 +3,7 @@
 @using SharedModels.Models
 @using SharedModels.Models.RequestModels;
 @using SharpExpenses.Services.Contracts;
+@using System.ComponentModel.DataAnnotations;
 
 <PageTitle>Registrar gasto</PageTitle>
 
@@ -12,7 +13,6 @@
 
     <EditForm Model="@newExpense" OnValidSubmit="@HandleValidSubmit" class="shadow p-3 mb-5 rounded">
     <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="form-group">
         <label for="Type">Tipo de gasto</label>
@@ -34,7 +34,7 @@
     <div class="form-group">
         <label for="Category">Categoria</label>
         <InputSelect id="Category" @bind-Value="newExpense.CategoryId" class="form-control">
-            <option value=1>Categoria 1</option>
+            <option value=0>Abarrotes</option>
         </InputSelect>
     </div>
 
@@ -48,7 +48,7 @@
         <InputDate id="Date" @bind-Value="newExpense.Date" class="form-control" />
 
         <label for="Time">Hora</label>
-        <InputText id="Time" @bind-Value="time" @onchange="UpdateTime" class="form-control" />
+        <InputText id="Time" @bind-Value="Time" @onchange="UpdateTime" class="form-control" />
     </div>
 
     <div class="form-group">
@@ -61,8 +61,14 @@
 </div>
 
 @code {
-    private ExpenseRequest newExpense = new ExpenseRequest();
-    private string time = DateTime.Now.ToString("HH:mm");
+    [Required]
+    public string Time = DateTime.Now.ToString("HH:mm");
+    private ExpenseRequest newExpense = new ExpenseRequest()
+    {
+            CategoryId = 0,
+            AmountSpent = 0.1M,
+            Date = DateTime.Now
+    };
 
     [Inject]
     public IExpensesService ExpensesService { get; set; } = null!;
@@ -70,8 +76,15 @@
 
     private void UpdateTime(ChangeEventArgs e)
     {
+        Console.WriteLine($"# e.value: {e.Value}");
         if (TimeSpan.TryParse(e.Value!.ToString(), out TimeSpan timeSpan))
+        {
+            Console.WriteLine($"# timeSpan: {timeSpan}");
             newExpense.Date = newExpense.Date.Date + timeSpan;
+            Console.WriteLine($"# newExpanse.Date: {newExpense.Date}");
+        }
+        Console.WriteLine("# Try parse was not succesful");
+
     }
 
     private void HandleValidSubmit()
