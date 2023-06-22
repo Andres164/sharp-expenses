@@ -17,5 +17,6 @@ builder.Services
     .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7068/")).AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
+builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
 
 await builder.Build().RunAsync();

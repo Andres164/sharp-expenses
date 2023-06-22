@@ -49,7 +49,7 @@ namespace SharpExpenses.Services
             }
         }
 
-        public async void Create(ExpenseRequest newExpense)
+        public async Task Create(ExpenseRequest newExpense)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace SharpExpenses.Services
             }
         }
 
-        public async void Update(int expenseId, ExpenseRequest updatedExpense)
+        public async Task Update(int expenseId, ExpenseRequest updatedExpense)
         {
             try
             {

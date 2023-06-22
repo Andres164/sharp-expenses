@@ -8,8 +8,8 @@ namespace SharpExpenses.Services.Contracts
     {
         Task<List<ExpenseViewModel>> ReadAll();
         Task<ExpenseViewModel?> Read(int expenseId);
-        void Create(ExpenseRequest newExpense);
+        Task Create(ExpenseRequest newExpense);
         Task<Expense?> Delete(int expenseId);
-        void Update(int expenseId, ExpenseRequest updatedExpense);
+        Task Update(int expenseId, ExpenseRequest updatedExpense);
     }
 }
