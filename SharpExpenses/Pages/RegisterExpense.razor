@@ -18,17 +18,17 @@
     <div class="form-group">
         <label for="Type">Tipo de gasto</label>
         <InputSelect id="Type" @bind-Value="_newExpense.Type" class="form-control">
-            <option value="Personal">Personal</option>
-            <option value="Business">Trabajo</option>
+            <option value="@Expense.Types.Personal">Personal</option>
+            <option value="@Expense.Types.Buissines">Trabajo</option>
         </InputSelect>
     </div>
 
     <div class="form-group">
         <label for="Importance">Necesidad</label>
         <InputSelect id="Importance" @bind-Value="_newExpense.Importance" class="form-control">
-            <option value="Essential">Esensial</option>
-            <option value="NonEssential">No esensial</option>
-            <option value="Luxury">Lujo</option>
+            <option value="@Expense.ImportanceCategories.Essential"> Esensial </option>
+            <option value="@Expense.ImportanceCategories.NonEssential"> No esensial </option>
+            <option value="@Expense.ImportanceCategories.Luxury"> Lujo </option>
         </InputSelect>
     </div>
 
@@ -48,7 +48,7 @@
     </div>
 
     <div class="form-group">
-        <label for="Date">Fecha Y Hora</label>
+        <label for="Date">Fecha y hora</label>
         <RadzenDatePicker ShowTime="true" HourFormat="12" id="Date" @bind-Value="_newExpense.Date" class="form-control" />
     </div>
 

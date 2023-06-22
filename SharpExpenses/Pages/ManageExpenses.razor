@@ -1,11 +1,12 @@
 ﻿@page "/"
-@inject HttpClient Http
+@using SharedModels.Models.ViewModels;
+@using SharpExpenses.Services.Contracts;
 
 <PageTitle>Administracion de gastos</PageTitle>
 
 <h1>Gastos</h1>
 
-@if (forecasts == null)
+@if (this._expenses == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -15,23 +16,32 @@ else
         <thead>
             <tr>
                 <th>Fecha</th>
+                <th>Hora</th>
                 <th>Cantidad gastada</th>
                 <th>Importancia</th>
                 <th>Tipo</th>
                 <th>Categoria</th>
-                <th>Notas</th>
+                <th>Descripcion</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var expense in this._expenses)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>$@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                    <td> </td>
-                    <td> </td>
+                    <td>@expense.Date.ToString("dd MMM yyyy")</td>
+                    <td>@expense.Date.ToShortTimeString()</td>
+                    <td>$ @expense.AmountSpent</td>
+                    <td>@expense.Importance</td>
+                    <td>@expense.Type</td>
+                    <td>@expense.CategoryName</td>
+                    <td>@((MarkupString)FormatDescription(expense.Description))</td>
+                    <td>
+                        <button class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </button>
+                        <button class="btn btn-danger">X</button>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -39,21 +49,20 @@ else
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    [Inject]
+    public IExpensesService _expensesService { get; set; } = null!;
+    private List<ExpenseViewModel>? _expenses;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        this._expenses = await this._expensesService.ReadAll();
     }
 
-    public class WeatherForecast
+    private string? FormatDescription(string description)
     {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        if (String.IsNullOrEmpty(description))
+            return null;
+        return description.Replace("\n", "<br>");
     }
+
 }
