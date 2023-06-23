@@ -62,15 +62,9 @@
 </div>
 
 @code {
-    private ExpenseRequest _newExpense = new ExpenseRequest()
-    {
-            CategoryId = 0,
-            AmountSpent = 0.1M,
-            Date = DateTime.Now
-    };
+    private ExpenseRequest _newExpense = null!; // is initialized in the first line of OnInitializedAsync override
     private List<ExpenseCategory> _categories = new List<ExpenseCategory>();
     private bool _isInitialized { get; set; }  = false;
-
 
     [Inject]
     public IExpensesService ExpensesService { get; set; } = null!;
@@ -78,6 +72,8 @@
     public IExpenseCategoriesService ExpenseCategoriesService { get; set; } = null!;
     [Inject]
     public NotificationService NotificationService { get; set; } = null!;
+    [Inject]
+    public NavigationManager UriHelper { get; set; } = null!;
 
     private async Task HandleValidSubmit()
     {
@@ -89,11 +85,14 @@
         catch (Exception ex)
         {
             ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
+            this.ReloadPage();
         }
+        this.InitializeNewExpense();
     }
 
     protected override async Task OnInitializedAsync()
     {
+        this.InitializeNewExpense();
         this._categories = await this.ExpenseCategoriesService.ReadAll();
         this._isInitialized = true;
     }
@@ -101,6 +100,24 @@
     private void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info)
     {
         this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = 4000 });
+    }
+
+    private void InitializeNewExpense()
+    {
+        this._newExpense = new ExpenseRequest()
+        {
+                CategoryId = 0,
+                AmountSpent = 0.1M,
+                Date = DateTime.Now
+        };
+    }
+
+    private void ReloadPage()
+    {
+        var timer = new Timer(new TimerCallback(_ =>
+            {
+                this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true); 
+            }), null, 2000, 2000);
     }
 }
 
