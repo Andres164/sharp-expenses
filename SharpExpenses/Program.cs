@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Radzen;
 using SharpExpenses;
 using SharpExpenses.Extensions;
 using SharpExpenses.Services;
@@ -18,5 +19,6 @@ builder.Services
 
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
+builder.Services.AddScoped<NotificationService>();
 
 await builder.Build().RunAsync();

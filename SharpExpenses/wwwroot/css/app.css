@@ -1,5 +1,14 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+.rz-notification-message.rz-growl {
+    position: fixed !important;
+    width: 35% !important;
+    bottom: 0px !important;
+    right: 10px !important;
+    top: unset !important;
+    font-size: 1.4em !important;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

@@ -35,7 +35,7 @@ else
                     <td>@expense.Importance</td>
                     <td>@expense.Type</td>
                     <td>@expense.CategoryName</td>
-                    <td>@((MarkupString)FormatDescription(expense.Description))</td>
+                    <td>@((MarkupString)FormatDescription(expense.Description)!)</td>
                     <td>
                         <button class="btn btn-primary">
                             <span class="oi oi-pencil"></span>
@@ -51,6 +51,7 @@ else
 @code {
     [Inject]
     public IExpensesService _expensesService { get; set; } = null!;
+
     private List<ExpenseViewModel>? _expenses;
 
     protected override async Task OnInitializedAsync()
@@ -58,7 +59,7 @@ else
         this._expenses = await this._expensesService.ReadAll();
     }
 
-    private string? FormatDescription(string description)
+    private string? FormatDescription(string? description)
     {
         if (String.IsNullOrEmpty(description))
             return null;

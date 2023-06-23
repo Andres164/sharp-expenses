@@ -76,16 +76,31 @@
     public IExpensesService ExpensesService { get; set; } = null!;
     [Inject]
     public IExpenseCategoriesService ExpenseCategoriesService { get; set; } = null!;
+    [Inject]
+    public NotificationService NotificationService { get; set; } = null!;
 
     private async Task HandleValidSubmit()
     {
-        await this.ExpensesService.Create(_newExpense);
+        try
+        {
+            await this.ExpensesService.Create(this._newExpense);
+            ShowNotification("Gasto registrado exitosamente", NotificationSeverity.Success);
+        }
+        catch (Exception ex)
+        {
+            ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
         this._categories = await this.ExpenseCategoriesService.ReadAll();
         this._isInitialized = true;
+    }
+
+    private void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info)
+    {
+        this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = 4000 });
     }
 }
 
