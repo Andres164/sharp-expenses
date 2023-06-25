@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using SharedModels.Models;
 @using SharedModels.Models.ViewModels;
 @using SharpExpenses.Services.Contracts;
 
@@ -28,12 +29,14 @@ else
         <tbody>
             @foreach (var expense in this._expenses)
             {
+                string importance = Expense.GetImportanceTranslation(expense.Importance),
+                       type = Expense.GetTypeTranslation(expense.Type);
                 <tr>
                     <td>@expense.Date.ToString("dd MMM yyyy")</td>
                     <td>@expense.Date.ToShortTimeString()</td>
                     <td>$ @expense.AmountSpent</td>
-                    <td>@expense.Importance</td>
-                    <td>@expense.Type</td>
+                    <td>@importance </td>
+                    <td>@type</td>
                     <td>@expense.CategoryName</td>
                     <td>@((MarkupString)FormatDescription(expense.Description)!)</td>
                     <td>
