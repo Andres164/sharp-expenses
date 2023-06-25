@@ -38,12 +38,12 @@ else
                     <td>@importance </td>
                     <td>@type</td>
                     <td>@expense.CategoryName</td>
-                    <td>@((MarkupString)FormatDescription(expense.Description)!)</td>
+                    <td style="white-space: pre-wrap">@expense.Description</td>
                     <td>
                         <button class="btn btn-primary">
                             <span class="oi oi-pencil"></span>
                         </button>
-                        <button class="btn btn-danger">X</button>
+                        <button @onclick="() => this.DeleteExpense(expense.ExpenseId)" class="btn btn-danger">X</button>
                     </td>
                 </tr>
             }
@@ -54,6 +54,10 @@ else
 @code {
     [Inject]
     public IExpensesService _expensesService { get; set; } = null!;
+    [Inject]
+    public NotificationService NotificationService { get; set; } = null!;
+    [Inject]
+    NavigationManager UriHelper { get; set; } = null!;
 
     private List<ExpenseViewModel>? _expenses;
 
@@ -62,11 +66,31 @@ else
         this._expenses = await this._expensesService.ReadAll();
     }
 
-    private string? FormatDescription(string? description)
+    private async Task DeleteExpense(int expenseId)
     {
-        if (String.IsNullOrEmpty(description))
-            return null;
-        return description.Replace("\n", "<br>");
+        try
+        {
+            Expense? deletedExpense = await this._expensesService.Delete(expenseId);
+            if (deletedExpense == null)
+                throw new Exception($"Logic error tyring to delete a expense, the expense with id: {expenseId} could't be found");
+            if(deletedExpense.ExpenseId != expenseId)
+                throw new Exception($"Logic error tyring to delete a expense, the expense with id: {deletedExpense.ExpenseId} was deleted instead it should have been ExpenseId: {expenseId}");
+            this._expenses!.Remove(this._expenses.FirstOrDefault(expense => expense.ExpenseId == expenseId)!); // Remove's argument can be null for reference types.
+            ShowNotification("Gasto eliminado", NotificationSeverity.Success);
+        }
+        catch(Exception)
+        {
+            ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
+
+            var timer = new Timer(new TimerCallback(_ =>
+            {
+                this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true);
+            }), null, 2000, 2000);
+        }
     }
 
+    private void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info)
+    {
+        this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = 4000 });
+    }
 }
