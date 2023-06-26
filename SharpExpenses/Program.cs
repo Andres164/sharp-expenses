@@ -20,5 +20,6 @@ builder.Services
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<ExpenseUpdateStateService>();
 
 await builder.Build().RunAsync();

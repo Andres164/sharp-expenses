@@ -2,6 +2,7 @@
 @using SharedModels.Models;
 @using SharedModels.Models.ViewModels;
 @using SharpExpenses.Services.Contracts;
+@using SharpExpenses.Services;
 
 @inherits BaseComponent
 
@@ -42,7 +43,7 @@ else
                     <td>@expense.CategoryName</td>
                     <td style="white-space: pre-wrap">@expense.Description</td>
                     <td>
-                        <button class="btn btn-primary">
+                        <button @onclick="() => this.UpdateExpense(expense)" class="btn btn-primary">
                             <span class="oi oi-pencil"></span>
                         </button>
                         <button @onclick="() => this.DeleteExpense(expense.ExpenseId)" class="btn btn-danger">X</button>
@@ -56,6 +57,8 @@ else
 @code {
     [Inject]
     public IExpensesService _expensesService { get; set; } = null!;
+    [Inject]
+    public ExpenseUpdateStateService ExpenseUpdateStateService { get; set; } = null!;
 
     private List<ExpenseViewModel>? _expenses;
 
@@ -79,9 +82,23 @@ else
         catch(Exception)
         {
             this.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
-            // Log error
             this.ReloadPage();
         }
     }
 
+    private void UpdateExpense(ExpenseViewModel expenseView)
+    {
+        ExpenseRequest expenseRequest = new ExpenseRequest
+            {
+                Type = expenseView.Type,
+                Importance = expenseView.Importance,
+                CategoryId = expenseView.CategoryId,
+                AmountSpent = expenseView.AmountSpent,
+                Date = expenseView.Date,
+                Description = expenseView.Description
+            };
+        this.ExpenseUpdateStateService.ExpenseId = expenseView.ExpenseId;
+        this.ExpenseUpdateStateService.CurrentExpenseRequest = expenseRequest;
+        this.UriHelper.NavigateTo("/modifyExpense");
+    }
 }
