@@ -1,0 +1,98 @@
+﻿@using SharpExpenses.Pages;
+@using System.ComponentModel.DataAnnotations;
+
+@inherits BaseComponent
+
+<PageTitle>@this.Title</PageTitle>
+
+<div id="header"></div>
+<div class="container">
+    <h1>Informacion del gasto</h1>
+
+    <EditForm Model="@this._formExpense" OnValidSubmit="@HandleValidSubmit" class="shadow p-3 mb-5 rounded">
+        <DataAnnotationsValidator />
+
+        <div class="form-group">
+            <label for="Type">Tipo de gasto</label>
+            <InputSelect id="Type" @bind-Value="this._formExpense.Type" class="form-control">
+                <option value="@Expense.Types.Personal">Personal</option>
+                <option value="@Expense.Types.Buissines">Trabajo</option>
+            </InputSelect>
+        </div>
+
+        <div class="form-group">
+            <label for="Importance">Necesidad</label>
+            <InputSelect id="Importance" @bind-Value="this._formExpense.Importance" class="form-control">
+                <option value="@Expense.ImportanceCategories.Essential"> Esensial </option>
+                <option value="@Expense.ImportanceCategories.NonEssential"> No esensial </option>
+                <option value="@Expense.ImportanceCategories.Luxury"> Lujo </option>
+            </InputSelect>
+        </div>
+
+        <div class="form-group">
+            <label for="Category">Categoria</label>
+            <InputSelect id="Category" @bind-Value="this._formExpense.CategoryId" class="form-control">
+                @foreach (var category in this._categories)
+                {
+                    <option value="@category.ExpenseCategoryId"> @category.ExpenseCategoryName </option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group">
+            <label for="AmountSpent">Cantidad gastada</label>
+            <InputNumber id="AmountSpent" min="0.1" step="0.1" @bind-Value="this._formExpense.AmountSpent" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="Date">Fecha y hora</label>
+            <RadzenDatePicker ShowTime="true" HourFormat="12" id="Date" @bind-Value="this._formExpense.Date" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="Description">Descripcion</label>
+            <InputTextArea id="Description" @bind-Value="this._formExpense.Description" class="form-control" />
+        </div>
+
+        <button disabled="@( !this._isInitialized )" type="submit" class="btn btn-primary">Guardar</button>
+    </EditForm>
+</div>
+
+@code {
+
+    protected ExpenseRequest _formExpense = null!; // is initialized in the first line of OnInitializedAsync override
+    protected List<ExpenseCategory> _categories = new List<ExpenseCategory>();
+    protected bool _isInitialized { get; set; } = false;
+
+    [Parameter]
+    public string Title { get; set; } = "";
+    [Inject]
+    public IExpensesService ExpensesService { get; set; } = null!;
+    [Inject]
+    public IExpenseCategoriesService ExpenseCategoriesService { get; set; } = null!;
+
+    protected virtual Task HandleValidSubmit()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected virtual void InitializeFormExpense()
+    {
+        this._formExpense = new ExpenseRequest()
+        {
+            CategoryId = 0,
+            AmountSpent = 0.1M,
+            Date = DateTime.Now
+        };
+    }
+
+    override protected async Task OnInitializedAsync()
+    {
+        this.InitializeFormExpense();
+        this._categories = await this.ExpenseCategoriesService.ReadAll();
+        this._isInitialized = true;
+    }
+
+    
+}
+

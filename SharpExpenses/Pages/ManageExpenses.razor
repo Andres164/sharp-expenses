@@ -79,7 +79,9 @@ else
         catch(Exception)
         {
             this.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
+            // Log error
             this.ReloadPage();
         }
     }
+
 }
