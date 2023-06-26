@@ -6,6 +6,8 @@
 @using SharpExpenses.Services.Contracts;
 @using System.ComponentModel.DataAnnotations;
 
+@inherits BaseComponent
+
 <PageTitle>Registrar gasto</PageTitle>
 
 <div id="header"></div>
@@ -70,21 +72,17 @@
     public IExpensesService ExpensesService { get; set; } = null!;
     [Inject]
     public IExpenseCategoriesService ExpenseCategoriesService { get; set; } = null!;
-    [Inject]
-    public NotificationService NotificationService { get; set; } = null!;
-    [Inject]
-    public NavigationManager UriHelper { get; set; } = null!;
 
     private async Task HandleValidSubmit()
     {
         try
         {
             await this.ExpensesService.Create(this._newExpense);
-            ShowNotification("Gasto registrado exitosamente", NotificationSeverity.Success);
+            this.ShowNotification("Gasto registrado exitosamente", NotificationSeverity.Success);
         }
         catch (Exception ex)
         {
-            ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
+            this.ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
             this.ReloadPage();
         }
         this.InitializeNewExpense();
@@ -97,11 +95,6 @@
         this._isInitialized = true;
     }
 
-    private void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info)
-    {
-        this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = 4000 });
-    }
-
     private void InitializeNewExpense()
     {
         this._newExpense = new ExpenseRequest()
@@ -110,14 +103,6 @@
                 AmountSpent = 0.1M,
                 Date = DateTime.Now
         };
-    }
-
-    private void ReloadPage()
-    {
-        var timer = new Timer(new TimerCallback(_ =>
-            {
-                this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true); 
-            }), null, 2000, 2000);
     }
 }
 

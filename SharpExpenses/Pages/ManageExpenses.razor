@@ -3,6 +3,8 @@
 @using SharedModels.Models.ViewModels;
 @using SharpExpenses.Services.Contracts;
 
+@inherits BaseComponent
+
 <PageTitle>Administracion de gastos</PageTitle>
 
 <h1>Gastos</h1>
@@ -54,10 +56,6 @@ else
 @code {
     [Inject]
     public IExpensesService _expensesService { get; set; } = null!;
-    [Inject]
-    public NotificationService NotificationService { get; set; } = null!;
-    [Inject]
-    NavigationManager UriHelper { get; set; } = null!;
 
     private List<ExpenseViewModel>? _expenses;
 
@@ -76,21 +74,12 @@ else
             if(deletedExpense.ExpenseId != expenseId)
                 throw new Exception($"Logic error tyring to delete a expense, the expense with id: {deletedExpense.ExpenseId} was deleted instead it should have been ExpenseId: {expenseId}");
             this._expenses!.Remove(this._expenses.FirstOrDefault(expense => expense.ExpenseId == expenseId)!); // Remove's argument can be null for reference types.
-            ShowNotification("Gasto eliminado", NotificationSeverity.Success);
+            this.ShowNotification("Gasto eliminado", NotificationSeverity.Success);
         }
         catch(Exception)
         {
-            ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
-
-            var timer = new Timer(new TimerCallback(_ =>
-            {
-                this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true);
-            }), null, 2000, 2000);
+            this.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
+            this.ReloadPage();
         }
-    }
-
-    private void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info)
-    {
-        this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = 4000 });
     }
 }
