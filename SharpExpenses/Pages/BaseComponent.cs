@@ -10,9 +10,9 @@ namespace SharpExpenses.Pages
         [Inject]
         public NavigationManager UriHelper { get; set; } = null!;
 
-        protected void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info)
+        protected void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info, int duration = 4000)
         {
-            this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = 4000 });
+            this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = duration });
         }
 
         protected void ReloadPage()

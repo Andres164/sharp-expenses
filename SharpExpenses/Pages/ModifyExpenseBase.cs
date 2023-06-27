@@ -15,7 +15,7 @@ namespace SharpExpenses.Pages
             var expenseBeingUpdated = this.ExpenseUpdateStateService.CurrentExpenseRequest;
             if (expenseBeingUpdated == null)
             {
-                this.UriHelper.NavigateTo("/");
+                this.NavigateToManagement();
                 return;
             }
             this._formExpense = expenseBeingUpdated;
@@ -29,17 +29,20 @@ namespace SharpExpenses.Pages
                     throw new ArgumentNullException("ExpenseUpdateStateService.ExpenseId is null");
                 int expenseId = Convert.ToInt32(this.ExpenseUpdateStateService.ExpenseId);
                 await this.ExpensesService.Update(expenseId, this._formExpense);
-                this.ShowNotification("Gasto actualizado exitosamente", NotificationSeverity.Success);
-                var timer = new Timer(new TimerCallback(_ =>
-                {
-                    this.UriHelper.NavigateTo("/");
-                }), null, 1000, 1000);
+                const int notificationDuration = 2000;
+                this.ShowNotification("Gasto actualizado exitosamente", NotificationSeverity.Success, notificationDuration);
+                this.NavigateToManagement();
             }
             catch (Exception ex) 
             {
                 this.ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
                 this.ReloadPage();
             }
+        }
+
+        protected void NavigateToManagement()
+        {
+            this.UriHelper.NavigateTo("/");
         }
     }
 }

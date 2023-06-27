@@ -43,10 +43,14 @@ else
                     <td>@expense.CategoryName</td>
                     <td style="white-space: pre-wrap">@expense.Description</td>
                     <td>
-                        <button @onclick="() => this.UpdateExpense(expense)" class="btn btn-primary">
-                            <span class="oi oi-pencil"></span>
-                        </button>
-                        <button @onclick="() => this.DeleteExpense(expense.ExpenseId)" class="btn btn-danger">X</button>
+                        <div style="white-space: nowrap">
+                            <button @onclick="() => this.UpdateExpense(expense)" class="btn btn-primary">
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button @onclick="() => this.DeleteExpense(expense.ExpenseId)" class="btn btn-danger">
+                                <span class="oi oi-x"></span>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             }

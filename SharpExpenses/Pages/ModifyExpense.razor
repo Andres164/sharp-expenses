@@ -1,5 +1,10 @@
 ﻿@page "/modifyExpense"
 
+@inherits ModifyExpenseBase
+
+<button @onclick='() => this.NavigateToManagement()' class="btn btn-danger" style="margin-bottom: 20px">
+    <span class="oi oi-account-logout"></span>
+</button>
 
 <ModifyExpenseBase Title="Modificar gasto">
 
