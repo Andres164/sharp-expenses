@@ -1,0 +1,49 @@
+﻿@page "/incomeViwer"
+@using SharedModels.RequestModels;
+
+<h1>Visor de ganancias</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 my-5">
+            <h4>Ganancias</h4>
+            <RadzenChart>
+                <RadzenColumnSeries Data="@this._periodsIncomes" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
+                    <RadzenSeriesDataLabels Visible="@this._showDataLabels" />
+                </RadzenColumnSeries>
+                <RadzenColumnOptions Radius="5" />
+                <RadzenValueAxis>
+                    <RadzenGridLines Visible="true" />
+                    <RadzenAxisTitle Text="Ganancias en MXN" />
+                </RadzenValueAxis>
+            </RadzenChart>
+            
+            <RadzenCard class="w-100 mb-4" >
+                <RadzenCheckBox @bind-Value="@this._showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                <RadzenLabel Text="Mostrar etiquetas de datos" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
+            </RadzenCard>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private List<PeriodIncome> _periodsIncomes = new List<PeriodIncome>();
+    private List<PeriodIncomeRequest> _periods = new List<PeriodIncomeRequest>();
+    private bool _showDataLabels = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.InitializePeriods();
+    }
+
+    private void InitializePeriods()
+    {
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var defaultPeriod = new PeriodIncomeRequest
+        {
+            PeriodStart = currentDate.AddMonths(-1),
+            PeriodEnd = currentDate
+        };
+        this._periods.Add(defaultPeriod);
+    }
+}
