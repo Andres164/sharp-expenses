@@ -30,12 +30,12 @@ namespace SharpExpenses.Pages
                 int expenseId = Convert.ToInt32(this.ExpenseUpdateStateService.ExpenseId);
                 await this.ExpensesService.Update(expenseId, this._formExpense);
                 const int notificationDuration = 2000;
-                this.ShowNotification("Gasto actualizado exitosamente", NotificationSeverity.Success, notificationDuration);
+                this.NotificationService.ShowNotification("Gasto actualizado exitosamente", NotificationSeverity.Success, notificationDuration);
                 this.NavigateToManagement();
             }
             catch (Exception ex) 
             {
-                this.ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
+                this.NotificationService.ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
                 this.ReloadPage();
             }
         }

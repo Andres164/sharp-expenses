@@ -1,19 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Radzen;
 
 namespace SharpExpenses.Pages
 {
     public class BaseComponent : ComponentBase
     {
         [Inject]
-        public NotificationService NotificationService { get; set; } = null!;
+        public SharpExpenses.Services.NotificationService NotificationService { get; set; } = null!;
         [Inject]
         public NavigationManager UriHelper { get; set; } = null!;
-
-        protected void ShowNotification(string message, NotificationSeverity severity = NotificationSeverity.Info, int duration = 4000)
-        {
-            this.NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = duration });
-        }
 
         protected void ReloadPage()
         {

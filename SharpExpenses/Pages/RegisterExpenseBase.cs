@@ -10,11 +10,11 @@ namespace SharpExpenses.Pages
             try
             {
                 await this.ExpensesService.Create(this._formExpense);
-                this.ShowNotification("Gasto registrado exitosamente", NotificationSeverity.Success);
+                this.NotificationService.ShowNotification("Gasto registrado exitosamente", NotificationSeverity.Success);
             }
             catch (Exception ex)
             {
-                this.ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
+                this.NotificationService.ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
                 this.ReloadPage();
             }
             this.InitializeFormExpense();

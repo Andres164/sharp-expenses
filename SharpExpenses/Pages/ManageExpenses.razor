@@ -81,11 +81,11 @@ else
             if(deletedExpense.ExpenseId != expenseId)
                 throw new Exception($"Logic error tyring to delete a expense, the expense with id: {deletedExpense.ExpenseId} was deleted instead it should have been ExpenseId: {expenseId}");
             this._expenses!.Remove(this._expenses.FirstOrDefault(expense => expense.ExpenseId == expenseId)!); // Remove's argument can be null for reference types.
-            this.ShowNotification("Gasto eliminado", NotificationSeverity.Success);
+            this.NotificationService.ShowNotification("Gasto eliminado", NotificationSeverity.Success);
         }
         catch(Exception)
         {
-            this.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
+            this.NotificationService.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
             this.ReloadPage();
         }
     }
