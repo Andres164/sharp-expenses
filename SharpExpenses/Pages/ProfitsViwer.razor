@@ -1,4 +1,4 @@
-﻿@page "/incomeViwer"
+﻿@page "/profitsViwer"
 @using SharedModels.RequestModels;
 
 <h1>Visor de ganancias</h1>
@@ -7,7 +7,7 @@
         <div class="col-sm-12 my-5">
             <h4>Ganancias</h4>
             <RadzenChart>
-                <RadzenColumnSeries Data="@this._periodsIncomes" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
+                <RadzenColumnSeries Data="@this._profitPerPeriods" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
                     <RadzenSeriesDataLabels Visible="@this._showDataLabels" />
                 </RadzenColumnSeries>
                 <RadzenColumnOptions Radius="5" />
@@ -27,7 +27,7 @@
 
 @code {
 
-    private List<PeriodIncome> _periodsIncomes = new List<PeriodIncome>();
+    private List<PeriodIncome> _profitPerPeriods = new List<PeriodIncome>();
     private List<PeriodIncomeRequest> _periods = new List<PeriodIncomeRequest>();
     private bool _showDataLabels = true;
 

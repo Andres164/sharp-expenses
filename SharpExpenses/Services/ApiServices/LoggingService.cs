@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
-using SharpExpenses.Services.Contracts;
+using SharpExpenses.Services.ApiServices.Contracts;
 using System.Net.Http.Json;
 
-namespace SharpExpenses.Services
+namespace SharpExpenses.Services.ApiServices
 {
     public class LoggingService : ILoggingService
     {
@@ -11,12 +11,12 @@ namespace SharpExpenses.Services
 
         public LoggingService(IHttpClientFactory httpClientFactory)
         {
-            this._httpClient = httpClientFactory.CreateClient("API");
+            _httpClient = httpClientFactory.CreateClient("API");
         }
 
         public async Task LogErrorAsync(string message)
         {
-            await this._httpClient.PostAsJsonAsync(_ControllerEndpoint, message);
+            await _httpClient.PostAsJsonAsync(_ControllerEndpoint, message);
         }
     }
 }

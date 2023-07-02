@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using SharpExpenses;
 using SharpExpenses.Extensions;
 using SharpExpenses.Services;
-using SharpExpenses.Services.Contracts;
+using SharpExpenses.Services.ApiServices;
+using SharpExpenses.Services.ApiServices.Contracts;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

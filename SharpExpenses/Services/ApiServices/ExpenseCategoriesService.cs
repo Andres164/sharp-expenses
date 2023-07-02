@@ -1,17 +1,18 @@
 ﻿using SharedModels.Models;
 using SharedModels.Models.ViewModels;
+using SharpExpenses.Services.ApiServices.Contracts;
 using System.Net.Http.Json;
 
-namespace SharpExpenses.Services.Contracts
+namespace SharpExpenses.Services.ApiServices
 {
-    public class ExpenseCategoriesService : IExpenseCategoriesService
+    public class ExpenseCategoriesService : ApiServiceBase, IExpenseCategoriesService
     {
-        private readonly HttpClient _httpClient;
-        private const string _ControllerEndpoint = "api/ExpenseCategories";
+        protected override string ControllerEndpoint => "api/ExpenseCategories";
 
         public ExpenseCategoriesService(IHttpClientFactory httpClientFactory)
+            : base(httpClientFactory)
         {
-            this._httpClient = httpClientFactory.CreateClient("API");
+
         }
 
 
@@ -19,7 +20,7 @@ namespace SharpExpenses.Services.Contracts
         {
             try
             {
-                var response = await this._httpClient.GetAsync(_ControllerEndpoint);
+                var response = await _httpClient.GetAsync(ControllerEndpoint);
                 response.EnsureSuccessStatusCode();
                 var categories = await response.Content.ReadFromJsonAsync<List<ExpenseCategory>>();
                 return categories!; // categories cannot be null, as the API always return a list

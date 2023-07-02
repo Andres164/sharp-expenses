@@ -1,4 +1,4 @@
-﻿namespace SharpExpenses.Services.Contracts
+﻿namespace SharpExpenses.Services.ApiServices.Contracts
 {
     public interface ILoggingService
     {

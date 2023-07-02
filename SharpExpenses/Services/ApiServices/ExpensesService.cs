@@ -1,19 +1,19 @@
 ﻿using SharedModels.Models;
 using SharedModels.Models.RequestModels;
 using SharedModels.Models.ViewModels;
-using SharpExpenses.Services.Contracts;
+using SharpExpenses.Services.ApiServices.Contracts;
 using System.Net.Http.Json;
 
-namespace SharpExpenses.Services
+namespace SharpExpenses.Services.ApiServices
 {
-    public class ExpensesService : IExpensesService
+    public class ExpensesService : ApiServiceBase, IExpensesService
     {
-        private readonly HttpClient _httpClient;
-        private const string _ControllerEndpoint = "api/Expenses";
+        protected override string ControllerEndpoint => "api/Expenses";
 
-        public ExpensesService(IHttpClientFactory clientFactory) 
+        public ExpensesService(IHttpClientFactory httpClientFactory)
+            : base(httpClientFactory)
         {
-            this._httpClient = clientFactory.CreateClient("API"); ;
+
         }
 
 
@@ -21,7 +21,7 @@ namespace SharpExpenses.Services
         {
             try
             {
-                var response = await this._httpClient.GetAsync($"{_ControllerEndpoint}");
+                var response = await _httpClient.GetAsync($"{ControllerEndpoint}");
                 response.EnsureSuccessStatusCode();
                 var expenses = await response.Content.ReadFromJsonAsync<List<ExpenseViewModel>>();
                 return expenses!; // expenses cannot be null as the API always returns a List
@@ -37,7 +37,7 @@ namespace SharpExpenses.Services
         {
             try
             {
-                var response = await this._httpClient.GetAsync($"{_ControllerEndpoint}/{expenseId}");
+                var response = await _httpClient.GetAsync($"{ControllerEndpoint}/{expenseId}");
                 response.EnsureSuccessStatusCode();
                 var expense = await response.Content.ReadFromJsonAsync<ExpenseViewModel>();
                 return expense;
@@ -53,11 +53,11 @@ namespace SharpExpenses.Services
         {
             try
             {
-                var response = await this._httpClient.PostAsJsonAsync<ExpenseRequest>(_ControllerEndpoint, newExpense);
+                var response = await _httpClient.PostAsJsonAsync(ControllerEndpoint, newExpense);
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
-            { 
+            {
                 Console.WriteLine($"Unexpected exception when trying to create a new expense: {ex}");// Properly Log exceptions
                 throw;
             }
@@ -67,7 +67,7 @@ namespace SharpExpenses.Services
         {
             try
             {
-                var response = await this._httpClient.PutAsJsonAsync<ExpenseRequest>($"{_ControllerEndpoint}/{expenseId}", updatedExpense);
+                var response = await _httpClient.PutAsJsonAsync($"{ControllerEndpoint}/{expenseId}", updatedExpense);
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception ex)
@@ -82,7 +82,7 @@ namespace SharpExpenses.Services
         {
             try
             {
-                var response = await this._httpClient.DeleteAsync($"{_ControllerEndpoint}/{expenseId}");
+                var response = await _httpClient.DeleteAsync($"{ControllerEndpoint}/{expenseId}");
                 response.EnsureSuccessStatusCode();
                 var deletedExpense = await response.Content.ReadFromJsonAsync<Expense>();
                 return deletedExpense;

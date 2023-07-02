@@ -1,7 +1,7 @@
 ﻿using SharedModels.Models;
 using SharedModels.Models.ViewModels;
 
-namespace SharpExpenses.Services.Contracts
+namespace SharpExpenses.Services.ApiServices.Contracts
 {
     public interface IExpenseCategoriesService
     {
