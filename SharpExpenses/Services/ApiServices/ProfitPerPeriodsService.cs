@@ -2,9 +2,6 @@
 using SharedModels.RequestModels;
 using SharpExpenses.Services.ApiServices.Contracts;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace SharpExpenses.Services.ApiServices
 {
@@ -12,16 +9,32 @@ namespace SharpExpenses.Services.ApiServices
     {
         protected override string ControllerEndpoint => "api/Profits";
 
-        public ProfitPerPeriodsService(IHttpClientFactory httpClientFactory)
-            : base(httpClientFactory)
+        public ProfitPerPeriodsService(IHttpClientFactory httpClientFactory, ILoggingService loggingService)
+            : base(httpClientFactory, loggingService)
         {
 
         }
 
 
-        public async Task Read(ProfitOfPeriodRequest period)
+        public async Task<ProfitOfPeriod> Read(ProfitOfPeriodRequest period)
         {
-            var httpResponse = await this._httpClient.GetFromJsonAsync<ProfitOfPeriod>(this.ControllerEndpoint);
+            try
+            {
+                string periodStart = period.PeriodStart.ToString("yyyy-MM-dd"),
+                   periodEnd = period.PeriodEnd.ToString("yyyy-MM-dd");
+
+                string uri = $"{this.ControllerEndpoint}?periodStart={periodStart}&periodEnd={periodEnd}";
+
+                var httpResponse = await this._httpClient.GetAsync(uri);
+                httpResponse.EnsureSuccessStatusCode();
+                var profitsOfPeriod = await httpResponse.Content.ReadFromJsonAsync<ProfitOfPeriod>();
+                return profitsOfPeriod!; // categories cannot be null, as the API always returns a value
+            }
+            catch (Exception ex)
+            {
+                await this._loggingService.LogErrorAsync($"Unexpected exception when trying to Read profits of a period: {ex}");
+                throw;
+            }
         }
     }
 }

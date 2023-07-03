@@ -1,5 +1,4 @@
 ﻿@page "/profitsViwer"
-@using SharedModels.RequestModels;
 
 <h1>Visor de ganancias</h1>
 <div class="container">
@@ -26,10 +25,12 @@
 </div>
 
 @code {
-
-    private List<PeriodIncome> _profitPerPeriods = new List<PeriodIncome>();
-    private List<PeriodIncomeRequest> _periods = new List<PeriodIncomeRequest>();
+    private List<ProfitOfPeriod> _profitPerPeriods = new List<ProfitOfPeriod>();
+    private List<ProfitOfPeriodRequest> _periods = new List<ProfitOfPeriodRequest>();
     private bool _showDataLabels = true;
+
+    [Inject]
+    public IProfitPerPeriodsService profitPerPeriodService { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,7 +40,7 @@
     private void InitializePeriods()
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
-        var defaultPeriod = new PeriodIncomeRequest
+        var defaultPeriod = new ProfitOfPeriodRequest
         {
             PeriodStart = currentDate.AddMonths(-1),
             PeriodEnd = currentDate
