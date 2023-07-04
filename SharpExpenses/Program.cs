@@ -20,7 +20,10 @@ builder.Services
 builder.Services.AddScoped<Radzen.NotificationService>();
 builder.Services.AddScoped<SharpExpenses.Services.NotificationService>();
 builder.Services.AddScoped<ExpenseUpdateStateService>();
+builder.Services.AddScoped<ILoggingService, LoggingService>();
+
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
+builder.Services.AddScoped<IProfitPerPeriodsService, ProfitPerPeriodsService>();
 
 await builder.Build().RunAsync();

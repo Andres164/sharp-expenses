@@ -1,9 +1,6 @@
 ﻿@page "/"
-@    using SharedModels.Models;
-@    using SharedModels.Models.ViewModels;
-@    using SharpExpenses.Services.Contracts;
-@    using SharpExpenses.Services;
-    using SharpExpenses.Services.ApiServices.Contracts;
+@using SharedModels.Models;
+@using SharedModels.Models.ViewModels;
 
 @inherits BaseComponent
 
@@ -69,7 +66,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        this._expenses = await this._expensesService.ReadAll();
+        try
+        {
+            this._expenses = await this._expensesService.ReadAll();
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowNotification("Ocurrio un error inesperado al cargar los gastos.", NotificationSeverity.Error, 4000);
+        }
     }
 
     private async Task DeleteExpense(int expenseId)
@@ -86,8 +90,7 @@ else
         }
         catch(Exception)
         {
-            this.NotificationService.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error);
-            this.ReloadPage();
+            this.NotificationService.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error, 4000);
         }
     }
 

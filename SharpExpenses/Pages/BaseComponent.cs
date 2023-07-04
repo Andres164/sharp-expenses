@@ -16,5 +16,11 @@ namespace SharpExpenses.Pages
                 this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true);
             }), null, 2000, 2000);
         }
+
+        protected void HandleExceptionInUserLayer()
+        {
+            this.NotificationService.ShowNotification("La pagina sera recargada debido a un error inesperado");
+            this.ReloadPage();
+        }
     }
 }

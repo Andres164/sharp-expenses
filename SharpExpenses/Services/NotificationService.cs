@@ -46,5 +46,10 @@ namespace SharpExpenses.Services
                 message = $"({LastNotificationHasRepeatedCount + 1}) {message}";
             this._radzenNotificationService.Notify(new NotificationMessage { Severity = severity, Summary = message, Duration = duration });
         }
+
+        public void ShowErrorNotification(string message, int duration = 4000)
+        {
+            this.ShowNotification(message, NotificationSeverity.Error, duration);
+        }
     }
 }

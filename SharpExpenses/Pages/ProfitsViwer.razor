@@ -1,4 +1,5 @@
 ﻿@page "/profitsViwer"
+@inherits BaseComponent
 
 <h1>Visor de ganancias</h1>
 <div class="container">
@@ -30,11 +31,25 @@
     private bool _showDataLabels = true;
 
     [Inject]
-    public IProfitPerPeriodsService profitPerPeriodService { get; set; } = null!;
+    public IProfitPerPeriodsService ProfitPerPeriodService { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
         this.InitializePeriods();
+        await this.InitializeProfitsPerPeriods();
+    }
+
+    private async Task InitializeProfitsPerPeriods()
+    {
+        try
+        {
+            ProfitOfPeriod profitOfDefaultPeriod = await this.ProfitPerPeriodService.Read(this._periods[0]);
+            this._profitPerPeriods.Add(profitOfDefaultPeriod);
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowNotification("Ocurrio un error al cargar las ganancias del periodo", NotificationSeverity.Error, 4000);
+        }
     }
 
     private void InitializePeriods()

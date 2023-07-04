@@ -1,6 +1,6 @@
-﻿@    using SharpExpenses.Pages;
-@    using System.ComponentModel.DataAnnotations;
-    using SharpExpenses.Services.ApiServices.Contracts;
+﻿@using SharpExpenses.Pages;
+@using System.ComponentModel.DataAnnotations;
+@using SharpExpenses.Services.ApiServices.Contracts;
 
 @inherits BaseComponent
 
@@ -90,8 +90,16 @@
     override protected async Task OnInitializedAsync()
     {
         this.InitializeFormExpense();
-        this._categories = await this.ExpenseCategoriesService.ReadAll();
-        this._isInitialized = true;
+        try
+        {
+            this._categories = await this.ExpenseCategoriesService.ReadAll();
+            this._isInitialized = true;
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowErrorNotification("Ocurrio un error inesperado al intentar cargar las categorias");
+            throw;
+        }
     }
 
     
