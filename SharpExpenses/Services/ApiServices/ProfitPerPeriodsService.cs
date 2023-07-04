@@ -9,8 +9,7 @@ namespace SharpExpenses.Services.ApiServices
     {
         protected override string ControllerEndpoint => "api/Profits";
 
-        public ProfitPerPeriodsService(IHttpClientFactory httpClientFactory, ILoggingService loggingService)
-            : base(httpClientFactory, loggingService)
+        public ProfitPerPeriodsService(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         {
 
         }

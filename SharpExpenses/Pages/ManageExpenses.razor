@@ -10,7 +10,7 @@
 
 @if (this._expenses == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Cargando...</em></p>
 }
 else
 {
@@ -72,7 +72,8 @@ else
         }
         catch (Exception)
         {
-            this.NotificationService.ShowNotification("Ocurrio un error inesperado al cargar los gastos.", NotificationSeverity.Error, 4000);
+            this.NotificationService.ShowErrorNotification("Ocurrio un error inesperado al cargar los gastos.");
+            throw;
         }
     }
 
@@ -85,12 +86,12 @@ else
                 throw new Exception($"Logic error tyring to delete a expense, the expense with id: {expenseId} could't be found");
             if(deletedExpense.ExpenseId != expenseId)
                 throw new Exception($"Logic error tyring to delete a expense, the expense with id: {deletedExpense.ExpenseId} was deleted instead it should have been ExpenseId: {expenseId}");
-            this._expenses!.Remove(this._expenses.FirstOrDefault(expense => expense.ExpenseId == expenseId)!); // Remove's argument can be null for reference types.
+            this._expenses!.Remove(this._expenses.FirstOrDefault(expense => expense.ExpenseId == expenseId)!); // Remove's argument can be null for reference types.   // _expenses cannot be null, as it is initialized in OnInitializedAsync method
             this.NotificationService.ShowNotification("Gasto eliminado", NotificationSeverity.Success);
         }
         catch(Exception)
         {
-            this.NotificationService.ShowNotification("Ocurrio un error inesperad al intentar eliminar el gasto", NotificationSeverity.Error, 4000);
+            this.NotificationService.ShowErrorNotification("Ocurrio un error inesperad al intentar eliminar el gasto");
         }
     }
 

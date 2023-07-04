@@ -9,18 +9,12 @@ namespace SharpExpenses.Pages
         [Inject]
         public NavigationManager UriHelper { get; set; } = null!;
 
-        protected void ReloadPage()
+        protected void ReloadPage(int delay = 2000)
         {
             var timer = new Timer(new TimerCallback(_ =>
             {
                 this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true);
-            }), null, 2000, 2000);
-        }
-
-        protected void HandleExceptionInUserLayer()
-        {
-            this.NotificationService.ShowNotification("La pagina sera recargada debido a un error inesperado");
-            this.ReloadPage();
+            }), null, delay, 2000);
         }
     }
 }

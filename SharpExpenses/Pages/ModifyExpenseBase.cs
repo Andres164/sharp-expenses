@@ -16,6 +16,7 @@ namespace SharpExpenses.Pages
             if (expenseBeingUpdated == null)
             {
                 this.NavigateToManagement();
+                this.NotificationService.ShowNotification("No se encontro el gasto selecciono para ser actualizado");
                 return;
             }
             this._formExpense = expenseBeingUpdated;
@@ -27,16 +28,17 @@ namespace SharpExpenses.Pages
             {
                 if (this.ExpenseUpdateStateService.ExpenseId == null)
                     throw new ArgumentNullException("ExpenseUpdateStateService.ExpenseId is null");
-                int expenseId = Convert.ToInt32(this.ExpenseUpdateStateService.ExpenseId);
+                int expenseId = Convert.ToInt32(this.ExpenseUpdateStateService.ExpenseId); // Convertion because ExpenseId is nullable int
                 await this.ExpensesService.Update(expenseId, this._formExpense);
                 const int notificationDuration = 2000;
                 this.NotificationService.ShowNotification("Gasto actualizado exitosamente", NotificationSeverity.Success, notificationDuration);
                 this.NavigateToManagement();
             }
-            catch (Exception ex) 
+            catch (Exception) 
             {
-                this.NotificationService.ShowNotification($"Error inesperado: {ex.Message}", NotificationSeverity.Error);
-                this.ReloadPage();
+                this.NotificationService.ShowErrorNotification("Ocurrio un error inesperado al intentar actualizar el gasto");
+                int reloadDelay = 1000;
+                this.ReloadPage(reloadDelay);
             }
         }
 

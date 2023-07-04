@@ -10,7 +10,7 @@
     <main>
 
         <article class="content px-4">
-            <ErrorBoundary>
+            <ErrorBoundary @ref="this.errorBoundary">
                 <ChildContent>
                     @Body
                 </ChildContent>
@@ -21,3 +21,12 @@
         </article>
     </main>
 </div>
+
+@code {
+    private ErrorBoundary? errorBoundary;
+
+    protected override void OnParametersSet()
+    {
+        errorBoundary?.Recover();
+    }
+}

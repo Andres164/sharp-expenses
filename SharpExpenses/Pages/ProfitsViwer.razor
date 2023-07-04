@@ -48,7 +48,8 @@
         }
         catch (Exception)
         {
-            this.NotificationService.ShowNotification("Ocurrio un error al cargar las ganancias del periodo", NotificationSeverity.Error, 4000);
+            this.NotificationService.ShowErrorNotification("Ocurrio un error al cargar las ganancias del periodo");
+            throw;
         }
     }
 
