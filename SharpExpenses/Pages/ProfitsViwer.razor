@@ -1,34 +1,61 @@
 ﻿@page "/profitsViwer"
 @inherits BaseComponent
 
-<h1>Visor de ganancias</h1>
-<div class="container">
-    <div class="row">
-        <div class="col-sm-12 my-5">
-            <h4>Ganancias</h4>
-            <RadzenChart>
-                <RadzenColumnSeries Data="@this._profitPerPeriods" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
-                    <RadzenSeriesDataLabels Visible="@this._showDataLabels" />
-                </RadzenColumnSeries>
-                <RadzenColumnOptions Radius="5" />
-                <RadzenValueAxis>
-                    <RadzenGridLines Visible="true" />
-                    <RadzenAxisTitle Text="Ganancias en MXN" />
-                </RadzenValueAxis>
-            </RadzenChart>
-            
-            <RadzenCard class="w-100 mb-4" >
-                <RadzenCheckBox @bind-Value="@this._showDataLabels" Name="dataLabels"></RadzenCheckBox>
-                <RadzenLabel Text="Mostrar etiquetas de datos" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
-            </RadzenCard>
+@if(this._isLoading)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <h1>Visor de ganancias</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 my-5">
+                <div class="row">
+                    <div class="col-4">
+                        <h4>Ganancias</h4>
+                    </div>
+                    <div class="col-4">
+                        <RadzenDatePicker DateFormat="dd/MMM/yyyy" @bind-Value=this._periods[0].PeriodStart></RadzenDatePicker>
+                    </div>
+                    <div class="col-4">
+                        <RadzenDatePicker DateFormat="dd/MMM/yyyy" @bind-Value=this._periods[0].PeriodEnd></RadzenDatePicker>
+                    </div>
+                </div>
+                <RadzenChart>
+                    <RadzenColumnSeries Data="@this._profitPerPeriods" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
+                        <RadzenSeriesDataLabels Visible="@this._showDataLabels" />
+                    </RadzenColumnSeries>
+                    <RadzenColumnOptions Radius="5" />
+                    <RadzenValueAxis>
+                        <RadzenGridLines Visible="true" />
+                        <RadzenAxisTitle Text="Ganancias en MXN" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+                <div class="row">
+                    <div class="col-4">
+                        <p>Ganancias antes de impuestos: @this._totalIncomeBeforeTax</p>
+                    </div>
+                    <div class="col-4">
+                        <p>Ganancias netas: @this._totalNetIncome</p>
+                    </div>
+                </div>
+                <RadzenCard class="w-100 mb-4">
+                    <RadzenCheckBox @bind-Value="@this._showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                    <RadzenLabel Text="Mostrar etiquetas de datos" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenCard>
+            </div>
         </div>
     </div>
-</div>
+}
 
 @code {
     private List<ProfitOfPeriod> _profitPerPeriods = new List<ProfitOfPeriod>();
     private List<ProfitOfPeriodRequest> _periods = new List<ProfitOfPeriodRequest>();
+    private double _totalIncomeBeforeTax = 0;
+    private double _totalNetIncome = 0;
     private bool _showDataLabels = true;
+    private bool _isLoading = true;
 
     [Inject]
     public IProfitPerPeriodsService ProfitPerPeriodService { get; set; } = null!;
@@ -45,6 +72,7 @@
         {
             ProfitOfPeriod profitOfDefaultPeriod = await this.ProfitPerPeriodService.Read(this._periods[0]);
             this._profitPerPeriods.Add(profitOfDefaultPeriod);
+            this._isLoading = false;
         }
         catch (Exception)
         {
@@ -55,7 +83,7 @@
 
     private void InitializePeriods()
     {
-        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var currentDate = DateTime.Today;
         var defaultPeriod = new ProfitOfPeriodRequest
         {
             PeriodStart = currentDate.AddMonths(-1),
