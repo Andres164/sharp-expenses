@@ -15,10 +15,10 @@ namespace SharpExpenses.Services.ApiServices
         }
 
 
-        public async Task<List<ProfitOfPeriod>> Read(List<ProfitOfPeriodRequest> periods)
+        public async Task<List<ProfitOfPeriod>> Read(ProfitOfPeriodRequest mainPeriod, List<ProfitOfPeriodRequest> subPeriods)
         {
-            string uri = $"{this.ControllerEndpoint}?{{";
-            foreach (var period in periods) 
+            string uri = $"{this.ControllerEndpoint}?{{{{PeriodStart={mainPeriod.PeriodStart},PeriodEnd={mainPeriod.PeriodEnd}}}&";
+            foreach (var period in subPeriods) 
                 uri += $"{{PeriodStart={period.PeriodStart}, PeriodEnd={period.PeriodEnd}}},";
             uri = uri.Remove(uri.Length - 1);
             uri += "}";

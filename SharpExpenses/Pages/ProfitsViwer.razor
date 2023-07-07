@@ -16,10 +16,10 @@ else
                         <h4>Ganancias</h4>
                     </div>
                     <div class="col-4">
-                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._subPeriods[0].PeriodStart></RadzenDatePicker>
+                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodStart></RadzenDatePicker>
                     </div>
                     <div class="col-4">
-                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._subPeriods[0].PeriodEnd></RadzenDatePicker>
+                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodEnd></RadzenDatePicker>
                     </div>
                 </div>
                 <RadzenChart>
@@ -73,9 +73,8 @@ else
         {
             this._isLoading = true;
             this._profitPerPeriods.Clear();
-            List<ProfitOfPeriod> profitOfPeriod = await this.ProfitPerPeriodService.Read(this._subPeriods);
-
-            this._profitPerPeriods.Add(profitOfPeriod);
+            this.ComputeSubPeriods();
+            this._profitPerPeriods = await this.ProfitPerPeriodService.Read(this._period, this._subPeriods);
             this.CalculateTotalBeforeTaxAndNetIncome();
             this._isLoading = false;
         }
@@ -91,11 +90,10 @@ else
         var currentDate = DateTime.Today;
         var defaultPeriod = new ProfitOfPeriodRequest
         {
-            PeriodStart = currentDate.AddDays(-10),
+            PeriodStart = currentDate.AddMonths(-1),
             PeriodEnd = currentDate
         };
         this._period = defaultPeriod;
-        // Initialize subperiods 
     }
 
     private void CalculateTotalBeforeTaxAndNetIncome()
@@ -105,5 +103,11 @@ else
             this._totalIncomeBeforeTax += profitOfPeriod.IncomeBeforeTaxes;
             this._totalNetIncome += profitOfPeriod.NetIncome;
         }
+    }
+
+    private void ComputeSubPeriods()
+    {
+        double periodLenghtInDays = (this._period.PeriodEnd - this._period.PeriodStart).TotalDays;
+        if (periodLenghtInDays <= 12)
     }
 }

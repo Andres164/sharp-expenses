@@ -5,6 +5,6 @@ namespace SharpExpenses.Services.ApiServices.Contracts
 {
     public interface IProfitPerPeriodsService
     {
-        Task<List<ProfitOfPeriod>> Read(List<ProfitOfPeriodRequest> periods);
+        Task<List<ProfitOfPeriod>> Read(ProfitOfPeriodRequest mainPeriod, List<ProfitOfPeriodRequest> subPeriods);
     }
 }
