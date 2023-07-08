@@ -15,13 +15,9 @@ namespace SharpExpenses.Services.ApiServices
         }
 
 
-        public async Task<List<ProfitOfPeriod>> Read(ProfitOfPeriodRequest mainPeriod, List<ProfitOfPeriodRequest> subPeriods)
+        public async Task<List<ProfitOfPeriod>> Read(ProfitOfPeriodRequest profitsOfPeriodRequest)
         {
-            string uri = $"{this.ControllerEndpoint}?{{{{PeriodStart={mainPeriod.PeriodStart},PeriodEnd={mainPeriod.PeriodEnd}}}&";
-            foreach (var period in subPeriods) 
-                uri += $"{{PeriodStart={period.PeriodStart}, PeriodEnd={period.PeriodEnd}}},";
-            uri = uri.Remove(uri.Length - 1);
-            uri += "}";
+            string uri = $"{this.ControllerEndpoint}?PeriodStart={profitsOfPeriodRequest.PeriodStart}&PeriodEnd={profitsOfPeriodRequest.PeriodEnd}&PeriodDivision={profitsOfPeriodRequest.PeriodDivision}";
 
             var httpResponse = await this._httpClient.GetAsync(uri);
             httpResponse.EnsureSuccessStatusCode();
