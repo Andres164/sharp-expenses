@@ -19,14 +19,14 @@ else
                         <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodStart></RadzenDatePicker>
                     </div>
                     <div class="col-4">
-                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodEnd></RadzenDatePicker>
+                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._periodEnd View="DatePickerView.Month"></RadzenDatePicker>
                     </div>
                     <div class="col-4">
-                        <RadzenDropDown @bind-Value=this._period.PeriodDivision Data=this._timeLapsesList />
+                        <RadzenDropDown @bind-Value=this._periodDivision Data=this._timeLapsesList Change="@( async () => await this.LoadProfitsPerPeriods() )" />
                     </div>
                 </div>
                 <RadzenChart>
-                    <RadzenColumnSeries Data="@this._profitPerSubPeriods" CategoryProperty="" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
+                    <RadzenColumnSeries Data="@this._profitPerSubPeriods" CategoryProperty="ShortenedPeriodDate" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
                         <RadzenSeriesDataLabels Visible="@this._showDataLabels" />
                     </RadzenColumnSeries>
                     <RadzenColumnOptions Radius="5" />
@@ -53,6 +53,8 @@ else
 }
 
 @code {
+    [Inject]
+    public IProfitPerPeriodsService ProfitPerPeriodService { get; set; } = null!;
     private List<ProfitOfPeriod> _profitPerSubPeriods = new List<ProfitOfPeriod>();
     private ProfitOfPeriodRequest _period = null!; // Initialized in 'InitializePeriods()'  before it is ever used
     private List<string> _timeLapsesList = new List<string>();
@@ -61,8 +63,29 @@ else
     private bool _showDataLabels = true;
     private bool _isLoading = true;
 
-    [Inject]
-    public IProfitPerPeriodsService ProfitPerPeriodService { get; set; } = null!;
+    private string _periodDivision
+    {
+        get
+        {
+            return ProfitOfPeriodRequest.GetTimeLapseTranslation(this._period.PeriodDivision);
+        }
+        set
+        {
+            this._period.PeriodDivision = ProfitOfPeriodRequest.GetTimeLapseFromTranslatedString(value);
+        }
+    }
+    private DateTime _periodEnd
+    {
+        get
+        {
+            return this._period.PeriodEnd;
+        }
+        set
+        {
+            value.AddHours(23)
+        }
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -96,7 +119,7 @@ else
         var currentDate = DateTime.Today;
         var defaultPeriod = new ProfitOfPeriodRequest
         {
-            PeriodStart = currentDate.AddMonths(-1),
+            PeriodStart = currentDate.AddDays(-14),
             PeriodEnd = currentDate
         };
         this._period = defaultPeriod;
