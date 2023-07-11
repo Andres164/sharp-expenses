@@ -15,14 +15,38 @@ else
                     <div class="col-4">
                         <h4>Ganancias</h4>
                     </div>
+                    @{
+                        string dateFormat = "dd/MMM/yyyy";
+                        OpenTo openTo = OpenTo.Date;
+                        int? fixDay = null,
+                             fixMonth = null;
+
+                        @switch (this._period.PeriodDivision)
+                        {
+                            case ProfitOfPeriodRequest.TimeLapses.Month:
+                                dateFormat = "MMM/yyyy";
+                                openTo = OpenTo.Month;
+                                fixDay = 1;
+                                break;
+
+                            case ProfitOfPeriodRequest.TimeLapses.Year:
+                                dateFormat = "yyyy";
+                                openTo = OpenTo.Year;
+                                fixDay = 1;
+                                fixMonth = 1;
+                                break;
+                        }
+
+                        <div class="col-4">
+                            <MudDatePicker @bind-value=this._period.PeriodStart Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
+                        </div>
+
+                        <div class="col-4">
+                            <MudDatePicker @bind-Value=this._period.PeriodEnd Change="@(async () => await this.LoadProfitsPerPeriods())" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
+                        </div>
+                    }
                     <div class="col-4">
-                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodStart></RadzenDatePicker>
-                    </div>
-                    <div class="col-4">
-                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodEnd></RadzenDatePicker>
-                    </div>
-                    <div class="col-4">
-                        <RadzenDropDown @bind-Value=this._periodDivision Data=this._timeLapsesList Change="@( async () => await this.LoadProfitsPerPeriods() )" />
+                        <RadzenDropDown @bind-Value=this._periodDivision Data=this._timeLapsesList Change="@( async () => await this.OnPeriodDivisionChanged() )" />
                     </div>
                 </div>
                 <RadzenChart>
@@ -56,7 +80,7 @@ else
     [Inject]
     public IProfitPerPeriodsService ProfitPerPeriodService { get; set; } = null!;
     private List<ProfitOfPeriod> _profitPerSubPeriods = new List<ProfitOfPeriod>();
-    private ProfitOfPeriodRequest _period = null!; // Initialized in 'InitializePeriods()'  before it is ever used
+    private ProfitOfPeriodRequest _period = new ProfitOfPeriodRequest(); // Initialized in 'InitializePeriods()'  before it is ever used
     private List<string> _timeLapsesList = new List<string>();
     private double _totalIncomeBeforeTax = 0;
     private double _totalNetIncome = 0;
@@ -72,6 +96,24 @@ else
         set
         {
             this._period.PeriodDivision = ProfitOfPeriodRequest.GetTimeLapseFromTranslatedString(value);
+        }
+    }
+
+    private DateTime _periodEnd
+    {
+        get
+        {
+            return this._period.PeriodEnd;
+        }
+        set
+        {
+            this._period.PeriodEnd = this._period.PeriodDivision switch
+            {
+                ProfitOfPeriodRequest.TimeLapses.Day => value,
+                ProfitOfPeriodRequest.TimeLapses.Month => value.AddMonths(1).AddSeconds(-1),
+                ProfitOfPeriodRequest.TimeLapses.Year => value.AddYears(1).AddSeconds(-1),
+                _ => throw new ArgumentException("The given value is not a valid TimeLapse")
+            };
         }
     }
 
@@ -106,12 +148,37 @@ else
     private void InitializePeriods()
     {
         var currentDate = DateTime.Today;
-        var defaultPeriod = new ProfitOfPeriodRequest
+        var currentMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+
+        ProfitOfPeriodRequest defaultPeriod = this._period.PeriodDivision switch
         {
-            PeriodStart = currentDate.AddDays(-14),
-            PeriodEnd = currentDate.AddHours(23).AddMinutes(59).AddSeconds(59)
+            ProfitOfPeriodRequest.TimeLapses.Day => new ProfitOfPeriodRequest
+                {
+                    PeriodStart = currentDate.AddDays(-14),
+                    PeriodEnd = currentDate.AddHours(23).AddMinutes(59).AddSeconds(59)
+                },
+            ProfitOfPeriodRequest.TimeLapses.Month => new ProfitOfPeriodRequest
+                {
+                    PeriodStart = currentMonth.AddMonths(-2),
+                    PeriodEnd = currentMonth.AddMonths(1).AddSeconds(-1)
+                },
+            ProfitOfPeriodRequest.TimeLapses.Year => new ProfitOfPeriodRequest
+                {
+                    PeriodStart = new DateTime(currentDate.Year -1, 1, 1),
+                    PeriodEnd = new DateTime(currentDate.Year, 12, 31)
+                },
+            _ => throw new Exception("The selected period duration is not a valid TimeLapse")
         };
+        defaultPeriod.PeriodDivision = this._period.PeriodDivision;
+
+
         this._period = defaultPeriod;
+    }
+
+    private async Task OnPeriodDivisionChanged()
+    {
+        this.InitializePeriods();
+        await this.LoadProfitsPerPeriods();
     }
 
     private void CalculateTotalBeforeTaxAndNetIncome()

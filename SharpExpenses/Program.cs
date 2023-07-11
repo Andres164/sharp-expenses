@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
 using SharpExpenses;
 using SharpExpenses.Extensions;
 using SharpExpenses.Services;
@@ -16,6 +17,8 @@ builder.Services
         .GetRequiredService<IHttpClientFactory>()
         .CreateClient("API"))
     .AddHttpClient("API", client => client.BaseAddress = new Uri("https://localhost:7068/")).AddHttpMessageHandler<CookieHandler>();
+
+builder.Services.AddMudServices();
 
 builder.Services.AddScoped<Radzen.NotificationService>();
 builder.Services.AddScoped<SharpExpenses.Services.NotificationService>();
