@@ -19,7 +19,7 @@ else
                         <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodStart></RadzenDatePicker>
                     </div>
                     <div class="col-4">
-                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._periodEnd View="DatePickerView.Month"></RadzenDatePicker>
+                        <RadzenDatePicker Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="dd/MMM/yyyy" @bind-Value=this._period.PeriodEnd></RadzenDatePicker>
                     </div>
                     <div class="col-4">
                         <RadzenDropDown @bind-Value=this._periodDivision Data=this._timeLapsesList Change="@( async () => await this.LoadProfitsPerPeriods() )" />
@@ -74,17 +74,6 @@ else
             this._period.PeriodDivision = ProfitOfPeriodRequest.GetTimeLapseFromTranslatedString(value);
         }
     }
-    private DateTime _periodEnd
-    {
-        get
-        {
-            return this._period.PeriodEnd;
-        }
-        set
-        {
-            value.AddHours(23)
-        }
-    }
 
 
     protected override async Task OnInitializedAsync()
@@ -120,7 +109,7 @@ else
         var defaultPeriod = new ProfitOfPeriodRequest
         {
             PeriodStart = currentDate.AddDays(-14),
-            PeriodEnd = currentDate
+            PeriodEnd = currentDate.AddHours(23).AddMinutes(59).AddSeconds(59)
         };
         this._period = defaultPeriod;
     }
