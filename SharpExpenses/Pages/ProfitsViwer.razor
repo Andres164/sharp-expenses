@@ -19,7 +19,7 @@ else
                         string dateFormat = "dd/MMM/yyyy";
                         OpenTo openTo = OpenTo.Date;
                         int? fixDay = null,
-                             fixMonth = null;
+                        fixMonth = null;
 
                         @switch (this._period.PeriodDivision)
                         {
@@ -38,11 +38,11 @@ else
                         }
 
                         <div class="col-4">
-                            <MudDatePicker @bind-value=this._period.PeriodStart Change="@( async () => await this.LoadProfitsPerPeriods() )" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
+                            <MudDatePicker @bind-Date=this._periodStart ValueChanged="@( async (newDate) => await this.LoadProfitsPerPeriods(newDate) )" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
                         </div>
 
                         <div class="col-4">
-                            <MudDatePicker @bind-Value=this._period.PeriodEnd Change="@(async () => await this.LoadProfitsPerPeriods())" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
+                            <MudDatePicker @bind-Date=this._periodEnd ValueChanged= DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
                         </div>
                     }
                     <div class="col-4">
@@ -99,7 +99,20 @@ else
         }
     }
 
-    private DateTime _periodEnd
+    private DateTime? _periodStart
+    {
+        get
+        {
+            return this._period.PeriodStart;
+        }
+        set
+        {
+            DateTime notNullValue = value ?? DateTime.Now;
+            this._period.PeriodStart = notNullValue;
+        }
+    }
+
+    private DateTime? _periodEnd
     {
         get
         {
@@ -107,11 +120,13 @@ else
         }
         set
         {
+            DateTime notNullValue = value ?? DateTime.Today;
+
             this._period.PeriodEnd = this._period.PeriodDivision switch
             {
-                ProfitOfPeriodRequest.TimeLapses.Day => value,
-                ProfitOfPeriodRequest.TimeLapses.Month => value.AddMonths(1).AddSeconds(-1),
-                ProfitOfPeriodRequest.TimeLapses.Year => value.AddYears(1).AddSeconds(-1),
+                ProfitOfPeriodRequest.TimeLapses.Day => notNullValue,
+                ProfitOfPeriodRequest.TimeLapses.Month => notNullValue.AddMonths(1).AddSeconds(-1),
+                ProfitOfPeriodRequest.TimeLapses.Year => notNullValue.AddYears(1).AddSeconds(-1),
                 _ => throw new ArgumentException("The given value is not a valid TimeLapse")
             };
         }
@@ -143,6 +158,11 @@ else
             this.NotificationService.ShowErrorNotification("Ocurrio un error al cargar las ganancias del periodo");
             throw;
         }
+    }
+
+    private async Task LoadProfitsPerPeriods(DateTime newDate, )
+    {
+        
     }
 
     private void InitializePeriods()
