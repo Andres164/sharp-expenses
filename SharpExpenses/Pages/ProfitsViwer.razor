@@ -16,7 +16,7 @@ else
                         <h4>Ganancias</h4>
                     </div>
                     @{
-                        string dateFormat = "dd/MMM/yyyy";
+                        string dateFormat = "dd/MMMM/yyyy";
                         OpenTo openTo = OpenTo.Date;
                         int? fixDay = null,
                         fixMonth = null;
@@ -24,7 +24,7 @@ else
                         @switch (this._period.PeriodDivision)
                         {
                             case ProfitOfPeriodRequest.TimeLapses.Month:
-                                dateFormat = "MMM/yyyy";
+                                dateFormat = "MMMM/yyyy";
                                 openTo = OpenTo.Month;
                                 fixDay = 1;
                                 break;
@@ -38,11 +38,11 @@ else
                         }
 
                         <div class="col-4">
-                            <MudDatePicker @bind-Date=this._periodStart ValueChanged="@( async (newDate) => await this.LoadProfitsPerPeriods(newDate) )" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
+                            <MudDatePicker Label="Comienzo del periodo" Date="@this._periodStart" DateChanged="@( async (newDate) => await this.OnPeriodStartChanged(newDate) )" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
                         </div>
 
                         <div class="col-4">
-                            <MudDatePicker @bind-Date=this._periodEnd ValueChanged= DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
+                            <MudDatePicker Label="Final del periodo" Date="@this._periodEnd" DateChanged="@( async (newDate) => await this.OnPeriodEndChanged(newDate) )" DateFormat="@dateFormat" OpenTo="@openTo" FixDay="@fixDay" FixMonth="@fixMonth" />
                         </div>
                     }
                     <div class="col-4">
@@ -80,7 +80,7 @@ else
     [Inject]
     public IProfitPerPeriodsService ProfitPerPeriodService { get; set; } = null!;
     private List<ProfitOfPeriod> _profitPerSubPeriods = new List<ProfitOfPeriod>();
-    private ProfitOfPeriodRequest _period = new ProfitOfPeriodRequest(); // Initialized in 'InitializePeriods()'  before it is ever used
+    private ProfitOfPeriodRequest _period = new ProfitOfPeriodRequest();
     private List<string> _timeLapsesList = new List<string>();
     private double _totalIncomeBeforeTax = 0;
     private double _totalNetIncome = 0;
@@ -124,10 +124,10 @@ else
 
             this._period.PeriodEnd = this._period.PeriodDivision switch
             {
-                ProfitOfPeriodRequest.TimeLapses.Day => notNullValue,
+                ProfitOfPeriodRequest.TimeLapses.Day => notNullValue.AddDays(1).AddSeconds(-1),
                 ProfitOfPeriodRequest.TimeLapses.Month => notNullValue.AddMonths(1).AddSeconds(-1),
                 ProfitOfPeriodRequest.TimeLapses.Year => notNullValue.AddYears(1).AddSeconds(-1),
-                _ => throw new ArgumentException("The given value is not a valid TimeLapse")
+                _ => throw new ArgumentException($"The enum value of {this._period.PeriodDivision} Has no case in property {nameof(this._periodEnd)}")
             };
         }
     }
@@ -150,6 +150,7 @@ else
             this._totalNetIncome = 0;
 
             this._profitPerSubPeriods = await this.ProfitPerPeriodService.Read(this._period);
+            this._profitPerSubPeriods = this._profitPerSubPeriods.OrderBy(p => p.PeriodDate).ToList();
             this.CalculateTotalBeforeTaxAndNetIncome();
             this._isLoading = false;
         }
@@ -160,10 +161,6 @@ else
         }
     }
 
-    private async Task LoadProfitsPerPeriods(DateTime newDate, )
-    {
-        
-    }
 
     private void InitializePeriods()
     {
@@ -187,18 +184,12 @@ else
                     PeriodStart = new DateTime(currentDate.Year -1, 1, 1),
                     PeriodEnd = new DateTime(currentDate.Year, 12, 31)
                 },
-            _ => throw new Exception("The selected period duration is not a valid TimeLapse")
+            _ => throw new Exception($"The selected period Division {this._period.PeriodDivision} doesnt have a initialization case")
         };
         defaultPeriod.PeriodDivision = this._period.PeriodDivision;
 
 
         this._period = defaultPeriod;
-    }
-
-    private async Task OnPeriodDivisionChanged()
-    {
-        this.InitializePeriods();
-        await this.LoadProfitsPerPeriods();
     }
 
     private void CalculateTotalBeforeTaxAndNetIncome()
@@ -209,4 +200,23 @@ else
             this._totalNetIncome += profitOfPeriod.NetIncome;
         }
     }
+
+    private async Task OnPeriodStartChanged(DateTime? newDate)
+    {
+        this._periodStart = newDate;
+        await this.LoadProfitsPerPeriods();
+    }
+
+    private async Task OnPeriodEndChanged(DateTime? newDate)
+    {
+        this._periodEnd = newDate;
+        await this.LoadProfitsPerPeriods();
+    }
+
+    private async Task OnPeriodDivisionChanged()
+    {
+        this.InitializePeriods();
+        await this.LoadProfitsPerPeriods();
+    }
+
 }
