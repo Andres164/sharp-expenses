@@ -103,12 +103,13 @@ else
     {
         get
         {
-            return this._period.PeriodStart;
+            return this._period.PeriodStart.ToLocalTime();
         }
         set
         {
             DateTime notNullValue = value ?? DateTime.Now;
-            this._period.PeriodStart = notNullValue;
+            DateTime valueInUtc = notNullValue.ToUniversalTime();
+            this._period.PeriodStart = valueInUtc;
         }
     }
 
@@ -116,19 +117,21 @@ else
     {
         get
         {
-            return this._period.PeriodEnd;
+            return this._period.PeriodEnd.ToLocalTime();
         }
         set
         {
             DateTime notNullValue = value ?? DateTime.Today;
 
-            this._period.PeriodEnd = this._period.PeriodDivision switch
+            notNullValue = this._period.PeriodDivision switch
             {
                 ProfitOfPeriodRequest.TimeLapses.Day => notNullValue.AddDays(1).AddSeconds(-1),
                 ProfitOfPeriodRequest.TimeLapses.Month => notNullValue.AddMonths(1).AddSeconds(-1),
                 ProfitOfPeriodRequest.TimeLapses.Year => notNullValue.AddYears(1).AddSeconds(-1),
                 _ => throw new ArgumentException($"The enum value of {this._period.PeriodDivision} Has no case in property {nameof(this._periodEnd)}")
             };
+            DateTime valueInUtc = notNullValue.ToUniversalTime();
+            this._period.PeriodEnd = valueInUtc;
         }
     }
 
@@ -151,6 +154,10 @@ else
 
             this._profitPerSubPeriods = await this.ProfitPerPeriodService.Read(this._period);
             this._profitPerSubPeriods = this._profitPerSubPeriods.OrderBy(p => p.PeriodDate).ToList();
+
+            for (int i = 0; i < this._profitPerSubPeriods.Count; i++)
+                this._profitPerSubPeriods[i].PeriodDate = this._profitPerSubPeriods[i].PeriodDate.ToLocalTime();
+
             this.CalculateTotalBeforeTaxAndNetIncome();
             this._isLoading = false;
         }
@@ -187,8 +194,8 @@ else
             _ => throw new Exception($"The selected period Division {this._period.PeriodDivision} doesnt have a initialization case")
         };
         defaultPeriod.PeriodDivision = this._period.PeriodDivision;
-
-
+        defaultPeriod.PeriodStart = defaultPeriod.PeriodStart.ToUniversalTime();
+        defaultPeriod.PeriodEnd = defaultPeriod.PeriodEnd.ToUniversalTime();
         this._period = defaultPeriod;
     }
 
