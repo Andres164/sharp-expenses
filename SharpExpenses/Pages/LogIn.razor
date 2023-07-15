@@ -1,0 +1,31 @@
+﻿@page "/logIn"
+@using libre_pensador_api.Models.RequestModels;
+
+
+<div class="form-signin text-center">
+    <EditForm Model="this._userCredentials">
+        <img class="mb-4 rounded-3" src="IMGs/librePensador.jpg" width="150" height="150">
+        <h1 class="h3 mb-3 fw-normal">Inicio de Sesion</h1>
+
+        <div class="form-floating">
+            <InputText @bind-value="this._userCredentials.Username" required class="form-control" placeholder="Usuario" />
+            <label for="floatingInput">Usuario</label>
+        </div>
+        <div class="form-floating">
+            <InputText @bind-value="this._userCredentials.Username" required type="password" class="form-control" placeholder="Password" />
+            <label for="floatingPassword">Contraseña</label>
+        </div>
+        <hr>
+        <br>
+        <button class="w-100 btn btn-lg btn-primary" id="btnLogIn" type="submit">Iniciar sesion</button>
+    </EditForm>
+</div>
+
+@code {
+    private UserCredentials _userCredentials { get; set; } = new UserCredentials(string.Empty, string.Empty);
+
+    private void HandleValidSubmit()
+    {
+        
+    }
+}

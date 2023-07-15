@@ -50,7 +50,7 @@ else
                     </div>
                 </div>
                 <RadzenChart>
-                    <RadzenColumnSeries Data="@this._profitPerSubPeriods" CategoryProperty="ShortenedPeriodDate" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="NetIncome">
+                    <RadzenColumnSeries Data="@this._profitPerSubPeriods" CategoryProperty="ShortenedPeriodDate" Title="Ganancias netas" LineType="LineType.Dashed" ValueProperty="RoundedNetIncome">
                         <RadzenSeriesDataLabels Visible="@this._showDataLabels" />
                     </RadzenColumnSeries>
                     <RadzenColumnOptions Radius="5" />
@@ -82,8 +82,8 @@ else
     private List<ProfitOfPeriod> _profitPerSubPeriods = new List<ProfitOfPeriod>();
     private ProfitOfPeriodRequest _period = new ProfitOfPeriodRequest();
     private List<string> _timeLapsesList = new List<string>();
-    private double _totalIncomeBeforeTax = 0;
-    private double _totalNetIncome = 0;
+    private decimal _totalIncomeBeforeTax = 0;
+    private decimal _totalNetIncome = 0;
     private bool _showDataLabels = true;
     private bool _isLoading = true;
 
