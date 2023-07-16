@@ -1,21 +1,28 @@
 ﻿@page "/logIn"
 @using libre_pensador_api.Models.RequestModels;
 
+@inherits BaseComponent
+
 
 <div class="form-signin text-center">
-    <EditForm Model="this._userCredentials">
+    <EditForm Model="@this._userCredentials" OnValidSubmit="@this.HandleValidSubmit">
+    <DataAnnotationsValidator />
         <img class="mb-4 rounded-3" src="IMGs/librePensador.jpg" width="150" height="150">
         <h1 class="h3 mb-3 fw-normal">Inicio de Sesion</h1>
 
         <div class="form-floating">
-            <InputText @bind-value="this._userCredentials.Username" required class="form-control" placeholder="Usuario" />
-            <label for="floatingInput">Usuario</label>
+            <RadzenTextBox @bind-value="this._userCredentials.Username" class="form-control" placeholder="User" id="floatingUser"/>
+            <label for="floatingUser">Usuario</label>
         </div>
         <div class="form-floating">
-            <InputText @bind-value="this._userCredentials.Username" required type="password" class="form-control" placeholder="Password" />
+            <RadzenTextBox @bind-value="this._userCredentials.Password" required type="password" class="form-control" placeholder="Password" id="floatingPassword" />
             <label for="floatingPassword">Contraseña</label>
         </div>
         <hr>
+        @if(this._areBadCredentials)
+        {
+            <p style="color: brown;">Usuario y/o contraseña incorrectos</p>
+        }
         <br>
         <button class="w-100 btn btn-lg btn-primary" id="btnLogIn" type="submit">Iniciar sesion</button>
     </EditForm>
@@ -23,9 +30,29 @@
 
 @code {
     private UserCredentials _userCredentials { get; set; } = new UserCredentials(string.Empty, string.Empty);
+    private bool _areBadCredentials = false;
 
-    private void HandleValidSubmit()
+    [Inject]
+    public IAuthenticationService AuthenticationService { get; set; } = null!;
+
+
+    protected async Task HandleValidSubmit()
     {
-        
+        try
+        {
+            if(await this.AuthenticationService.Authenticate(this._userCredentials) == false)
+            {
+                this._areBadCredentials = true;
+                this.StateHasChanged();
+                return;
+            }
+
+            this.UriHelper.NavigateTo("/");
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowErrorNotification("Ocurrio un error inesperado al intentar verificar las credenciales");
+            throw;
+        }
     }
 }

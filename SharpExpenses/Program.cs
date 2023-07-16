@@ -28,5 +28,6 @@ builder.Services.AddScoped<ILoggingService, LoggingService>();
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
 builder.Services.AddScoped<IProfitPerPeriodsService, ProfitPerPeriodsService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 await builder.Build().RunAsync();
