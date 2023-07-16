@@ -1,25 +1,35 @@
 ﻿using libre_pensador_api.Models.RequestModels;
 using SharpExpenses.Services.ApiServices.Contracts;
+using System.Net.Http.Json;
 
 namespace SharpExpenses.Services.ApiServices
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService : ApiServiceBase, IAuthenticationService
     {
-        private readonly HttpClient _httpClient;
+        protected override string ControllerEndpoint => "api/Authentication";
 
         public AuthenticationService(IHttpClientFactory httpClientFactory) 
-        { 
+            : base(httpClientFactory)
+        {
 
         }
 
-        public Task Authenticate(UserCredentials userCredentials)
+        public async Task<bool> Authenticate(UserCredentials userCredentials)
         {
-            
+            var response = await this._httpClient.PostAsJsonAsync<UserCredentials>($"{this.ControllerEndpoint}/authenticate", userCredentials);
+            if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return false;
+            response.EnsureSuccessStatusCode();
+            return true;
         }
 
-        public Task<bool> IsSessionAuthenticated()
+        public async Task<bool> IsSessionAuthenticated()
         {
-            throw new NotImplementedException();
+            var response = await this._httpClient.GetAsync($"{this.ControllerEndpoint}/checkIfAuthenticated");
+            if(response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
+                return false;
+            response.EnsureSuccessStatusCode();
+            return true;
         }
     }
 }

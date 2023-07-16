@@ -4,7 +4,7 @@ namespace SharpExpenses.Services.ApiServices.Contracts
 {
     public interface IAuthenticationService
     {
-        Task Authenticate(UserCredentials userCredentials);
+        Task<bool> Authenticate(UserCredentials userCredentials);
         Task<bool> IsSessionAuthenticated();
     }
 }
