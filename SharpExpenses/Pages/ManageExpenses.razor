@@ -33,8 +33,8 @@ else
                 string importance = Expense.GetImportanceTranslation(expense.Importance),
                        type = Expense.GetTypeTranslation(expense.Type);
                 <tr>
-                    <td>@expense.Date.ToString("dd MMM yyyy")</td>
-                    <td>@expense.Date.ToShortTimeString()</td>
+                    <td>@expense.DateInLocalTime.ToString("dd MMM yyyy")</td>
+                    <td>@expense.DateInLocalTime.ToShortTimeString()</td>
                     <td>$ @expense.AmountSpent</td>
                     <td>@importance </td>
                     <td>@type</td>
@@ -42,10 +42,10 @@ else
                     <td style="white-space: pre-wrap">@expense.Description</td>
                     <td>
                         <div style="white-space: nowrap">
-                            <button @onclick="() => this.UpdateExpense(expense)" class="btn btn-primary">
+                            <button disabled="@this._isProcessingRequest" @onclick="() => this.UpdateExpense(expense)" class="btn btn-primary">
                                 <span class="oi oi-pencil"></span>
                             </button>
-                            <button @onclick="() => this.DeleteExpense(expense.ExpenseId)" class="btn btn-danger">
+                            <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteExpense(expense.ExpenseId)" class="btn btn-danger">
                                 <span class="oi oi-x"></span>
                             </button>
                         </div>
@@ -63,12 +63,14 @@ else
     public ExpenseUpdateStateService ExpenseUpdateStateService { get; set; } = null!;
 
     private List<ExpenseViewModel>? _expenses;
+    private bool _isProcessingRequest = true;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             this._expenses = await this._expensesService.ReadAll();
+            this._isProcessingRequest = false;
         }
         catch (Exception)
         {
@@ -79,6 +81,7 @@ else
 
     private async Task DeleteExpense(int expenseId)
     {
+        this._isProcessingRequest = true;
         try
         {
             Expense? deletedExpense = await this._expensesService.Delete(expenseId);
@@ -93,10 +96,12 @@ else
         {
             this.NotificationService.ShowErrorNotification("Ocurrio un error inesperad al intentar eliminar el gasto");
         }
+        finally { this._isProcessingRequest = false; }
     }
 
     private void UpdateExpense(ExpenseViewModel expenseView)
     {
+        this._isProcessingRequest = true;
         ExpenseRequest expenseRequest = new ExpenseRequest
             {
                 Type = expenseView.Type,

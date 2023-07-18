@@ -24,6 +24,7 @@ namespace SharpExpenses.Pages
 
         protected async override Task HandleValidSubmit()
         {
+            this._isInitialized = false;
             try
             {
                 if (this.ExpenseUpdateStateService.ExpenseId == null)

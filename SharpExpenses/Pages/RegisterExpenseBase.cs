@@ -7,6 +7,7 @@ namespace SharpExpenses.Pages
     {
         override protected async Task HandleValidSubmit()
         {
+            this._isInitialized = false;
             try
             {
                 await this.ExpensesService.Create(this._formExpense);
@@ -17,6 +18,7 @@ namespace SharpExpenses.Pages
             {
                 this.NotificationService.ShowErrorNotification("Ocurrio un error inesperado al intentar registrar el gasto");
             }
+            finally { this._isInitialized = true; }
         }
     }
 }
