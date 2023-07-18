@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -29,5 +30,8 @@ builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
 builder.Services.AddScoped<IProfitPerPeriodsService, ProfitPerPeriodsService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync();
