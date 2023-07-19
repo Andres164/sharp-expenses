@@ -1,4 +1,7 @@
-﻿<AuthorizeView>
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager UriHelper;
+
+<AuthorizeView>
     <Authorized>
         <div class="top-row ps-3 navbar navbar-dark">
             <div class="container-fluid">
@@ -29,7 +32,6 @@
             </nav>
         </div>
     </Authorized>
-    <NotAuthorized></NotAuthorized>
 </AuthorizeView>
 
 @code {
@@ -37,8 +39,26 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    protected async override Task OnInitializedAsync()
+    {
+        this.AuthenticationStateProvider.AuthenticationStateChanged += HandleAuthenticationStateChanged;
+        await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void HandleAuthenticationStateChanged(Task<AuthenticationState> authenticationState)
+    {
+        this.StateHasChanged();
+    }
+
+
+
+    public void Dispose()
+    {
+        this.AuthenticationStateProvider.AuthenticationStateChanged -= HandleAuthenticationStateChanged;
     }
 }

@@ -31,7 +31,8 @@ builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>(
 builder.Services.AddScoped<IProfitPerPeriodsService, ProfitPerPeriodsService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
 builder.Services.AddAuthorizationCore();
 
 await builder.Build().RunAsync();

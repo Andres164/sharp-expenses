@@ -21,13 +21,19 @@ namespace SharpExpenses.Services
             bool isSessionAuthenticated = await this._authenticationService.IsSessionAuthenticated();
             ClaimsIdentity identity = new ClaimsIdentity();
             if (isSessionAuthenticated)
-                identity.AddClaim(new Claim("IsAuthenticated", "true"));
+            {
+                identity = new ClaimsIdentity("Custom Authentication");
+            }
             else
             {
                 this._navigationManager.NavigateTo("/logIn");
             }
             var user = new ClaimsPrincipal(identity);
-            return new AuthenticationState(user);
+            var state = new AuthenticationState(user);
+
+            this.NotifyAuthenticationStateChanged(Task.FromResult(state));
+
+            return state;
         }
     }
 }

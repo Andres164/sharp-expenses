@@ -39,6 +39,7 @@
 
     protected async Task HandleValidSubmit()
     {
+        this._areBadCredentials = false;
         this._isProcessingRequest = true;
         try
         {
