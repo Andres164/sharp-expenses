@@ -16,6 +16,12 @@ namespace SharpExpenses.Services
             this._navigationManager = navigationManager;
         }
 
+        public async Task StateChanged()
+        {
+            var state = await this.GetAuthenticationStateAsync();
+            this.NotifyAuthenticationStateChanged(Task.FromResult(state));
+        }
+
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             bool isSessionAuthenticated = await this._authenticationService.IsSessionAuthenticated();
@@ -30,9 +36,6 @@ namespace SharpExpenses.Services
             }
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
-
-            this.NotifyAuthenticationStateChanged(Task.FromResult(state));
-
             return state;
         }
     }

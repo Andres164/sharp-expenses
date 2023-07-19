@@ -1,4 +1,4 @@
-﻿@inject AuthenticationStateProvider AuthenticationStateProvider;
+﻿@inject CustomAuthStateProvider AuthenticationStateProvider;
 @inject NavigationManager UriHelper;
 
 <AuthorizeView>
@@ -39,10 +39,9 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    protected async override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         this.AuthenticationStateProvider.AuthenticationStateChanged += HandleAuthenticationStateChanged;
-        await this.AuthenticationStateProvider.GetAuthenticationStateAsync();
     }
 
     private void ToggleNavMenu()
@@ -52,7 +51,7 @@
 
     private void HandleAuthenticationStateChanged(Task<AuthenticationState> authenticationState)
     {
-        this.StateHasChanged();
+        this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true);
     }
 
 
