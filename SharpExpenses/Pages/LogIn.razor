@@ -24,13 +24,14 @@
             <p style="color: brown;">Usuario y/o contraseña incorrectos</p>
         }
         <br>
-        <button class="w-100 btn btn-lg btn-primary" id="btnLogIn" type="submit">Iniciar sesion</button>
+        <button disabled="@this._isProcessingRequest" class="w-100 btn btn-lg btn-primary" id="btnLogIn" type="submit">Iniciar sesion</button>
     </EditForm>
 </div>
 
 @code {
     private UserCredentials _userCredentials { get; set; } = new UserCredentials(string.Empty, string.Empty);
     private bool _areBadCredentials = false;
+    private bool _isProcessingRequest = false;
 
     [Inject]
     public IAuthenticationService AuthenticationService { get; set; } = null!;
@@ -38,6 +39,7 @@
 
     protected async Task HandleValidSubmit()
     {
+        this._isProcessingRequest = true;
         try
         {
             if(await this.AuthenticationService.Authenticate(this._userCredentials) == false)
@@ -53,6 +55,10 @@
         {
             this.NotificationService.ShowErrorNotification("Ocurrio un error inesperado al intentar verificar las credenciales");
             throw;
+        }
+        finally
+        {
+            this._isProcessingRequest = false;
         }
     }
 }

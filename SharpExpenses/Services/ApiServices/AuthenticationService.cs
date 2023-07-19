@@ -26,7 +26,7 @@ namespace SharpExpenses.Services.ApiServices
         public async Task<bool> IsSessionAuthenticated()
         {
             var response = await this._httpClient.GetAsync($"{this.ControllerEndpoint}/checkIfAuthenticated");
-            if(response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
+            if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 return false;
             response.EnsureSuccessStatusCode();
             return true;
