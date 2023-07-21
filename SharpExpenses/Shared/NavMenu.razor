@@ -1,7 +1,4 @@
-﻿@inject CustomAuthStateProvider AuthenticationStateProvider;
-@inject NavigationManager UriHelper;
-
-<AuthorizeView>
+﻿<AuthorizeView>
     <Authorized>
         <div class="top-row ps-3 navbar navbar-dark">
             <div class="container-fluid">
@@ -39,25 +36,8 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    protected override void OnInitialized()
-    {
-        this.AuthenticationStateProvider.AuthenticationStateChanged += HandleAuthenticationStateChanged;
-    }
-
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-    }
-
-    private void HandleAuthenticationStateChanged(Task<AuthenticationState> authenticationState)
-    {
-        this.UriHelper.NavigateTo(this.UriHelper.Uri, forceLoad: true);
-    }
-
-
-
-    public void Dispose()
-    {
-        this.AuthenticationStateProvider.AuthenticationStateChanged -= HandleAuthenticationStateChanged;
     }
 }

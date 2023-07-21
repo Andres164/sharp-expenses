@@ -7,12 +7,10 @@ namespace SharpExpenses.Services.ApiServices
     public class AuthenticationService : ApiServiceBase, IAuthenticationService
     {
         protected override string ControllerEndpoint => "api/Authentication";
-        private readonly CustomAuthStateProvider _authenticationStateProvider;
 
-        public AuthenticationService(IHttpClientFactory httpClientFactory, CustomAuthStateProvider authenticationStateProvider) 
+        public AuthenticationService(IHttpClientFactory httpClientFactory) 
             : base(httpClientFactory)
         {
-            this._authenticationStateProvider = authenticationStateProvider;
         }
 
         public async Task<bool> Authenticate(UserCredentials userCredentials)
@@ -21,7 +19,6 @@ namespace SharpExpenses.Services.ApiServices
             if(response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 return false;
             response.EnsureSuccessStatusCode();
-            await this._authenticationStateProvider.StateChanged();
             return true;
         }
 

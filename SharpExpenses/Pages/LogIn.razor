@@ -35,6 +35,8 @@
 
     [Inject]
     public IAuthenticationService AuthenticationService { get; set; } = null!;
+    [Inject]
+    public CustomAuthStateProvider AuthenticationStateProvider { get; set; } = null!;
 
 
     protected async Task HandleValidSubmit()
@@ -50,6 +52,7 @@
                 return;
             }
 
+            await this.AuthenticationStateProvider.StateChanged();
             this.UriHelper.NavigateTo("/");
         }
         catch (Exception)
