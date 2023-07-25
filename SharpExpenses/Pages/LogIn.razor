@@ -29,7 +29,7 @@
 </div>
 
 @code {
-    private UserCredentials _userCredentials { get; set; } = new UserCredentials(string.Empty, string.Empty);
+    private UserCredentials _userCredentials { get; set; } = new UserCredentials { Username = string.Empty, Password = string.Empty };
     private bool _areBadCredentials = false;
     private bool _isProcessingRequest = false;
 
