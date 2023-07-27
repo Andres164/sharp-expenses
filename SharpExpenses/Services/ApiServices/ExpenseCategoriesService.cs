@@ -31,12 +31,14 @@ namespace SharpExpenses.Services.ApiServices
 
         public async Task Create(ExpenseCategoryViewModel newCategory)
         {
-            throw new NotImplementedException();
+            var response = await this._httpClient.PostAsJsonAsync(ControllerEndpoint, newCategory);
+            response.EnsureSuccessStatusCode();
         }
 
-        public async Task<ExpenseCategory?> Update(ExpenseCategoryViewModel updatedCategory)
+        public async Task<ExpenseCategory?> Update(int categoryId, ExpenseCategoryViewModel updatedCategory)
         {
-            throw new NotImplementedException();
+            var response = await this._httpClient.PutAsJsonAsync($"{ControllerEndpoint}/{categoryId}", updatedCategory);
+            var updatedCategory = 
         }
 
         public async Task<ExpenseCategory?> Delete(int categoryId)
