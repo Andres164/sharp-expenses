@@ -58,7 +58,7 @@ else
 
 @code {
     [Inject]
-    public IExpensesService _expensesService { get; set; } = null!;
+    public IExpensesService ExpensesService { get; set; } = null!;
     [Inject]
     public ExpenseUpdateStateService ExpenseUpdateStateService { get; set; } = null!;
 
@@ -69,7 +69,7 @@ else
     {
         try
         {
-            this._expenses = await this._expensesService.ReadAll();
+            this._expenses = await this.ExpensesService.ReadAll();
             this._isProcessingRequest = false;
         }
         catch (Exception)
@@ -84,7 +84,7 @@ else
         this._isProcessingRequest = true;
         try
         {
-            Expense? deletedExpense = await this._expensesService.Delete(expenseId);
+            Expense? deletedExpense = await this.ExpensesService.Delete(expenseId);
             if (deletedExpense == null)
                 throw new Exception($"Logic error tyring to delete a expense, the expense with id: {expenseId} could't be found");
             if(deletedExpense.ExpenseId != expenseId)

@@ -1,0 +1,52 @@
+﻿<h3>Categorias</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var category in this._categories)
+        {
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <div style="white-space: nowrap">
+                        <button disabled="@this._isProcessingRequest" @onclick="() => this.UpdateCategory(category)" class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </button>
+                        <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteCategory(category.ExpenseCategoryId)" class="btn btn-danger">
+                            <span class="oi oi-x"></span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>    
+</table>
+
+@code {
+    [Inject]
+    public ExpenseCategoriesService ExpenseCategoriesService { get; set; } = null!;
+
+    private bool _isProcessingRequest = true;
+    private List<ExpenseCategory> _categories = new List<ExpenseCategory>();
+
+    private void UpdateCategory(ExpenseCategory category)
+    {
+
+    }
+
+    private async Task DeleteCategory(int categorryId)
+    {
+        this._isProcessingRequest = true;
+
+        await this.ExpenseCategoriesService.Delete(categorryId);
+
+        this._isProcessingRequest = false;
+    }
+}
