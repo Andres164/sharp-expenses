@@ -1,40 +1,62 @@
-﻿<h3>Categorias</h3>
+﻿@page "/manageCategories"
+@inherits BaseComponent
 
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var category in this._categories)
-        {
+<h3>Categorias</h3>
+@if(this._categories == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                </td>
-                <td>
-                    <div style="white-space: nowrap">
-                        <button disabled="@this._isProcessingRequest" @onclick="() => this.UpdateCategory(category)" class="btn btn-primary">
-                            <span class="oi oi-pencil"></span>
-                        </button>
-                        <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteCategory(category.ExpenseCategoryId)" class="btn btn-danger">
-                            <span class="oi oi-x"></span>
-                        </button>
-                    </div>
-                </td>
+                <th></th>
+                <th></th>
+                <th></th>
             </tr>
-        }
-    </tbody>    
-</table>
+        </thead>
+        <tbody>
+            @foreach (var category in this._categories)
+            {
+                <tr>
+                    <td> @category.ExpenseCategoryName </td>
+                    <td>
+                        <div style="white-space: nowrap">
+                            <button disabled="@this._isProcessingRequest" @onclick="() => this.UpdateCategory(category)" class="btn btn-primary">
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteCategory(category.ExpenseCategoryId)" class="btn btn-danger">
+                                <span class="oi oi-x"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 
 @code {
     [Inject]
-    public ExpenseCategoriesService ExpenseCategoriesService { get; set; } = null!;
+    public IExpenseCategoriesService ExpenseCategoriesService { get; set; } = null!;
 
-    private bool _isProcessingRequest = true;
-    private List<ExpenseCategory> _categories = new List<ExpenseCategory>();
+    private bool _isProcessingRequest = false;
+    private List<ExpenseCategory>? _categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            this._categories = await this.ExpenseCategoriesService.ReadAll();
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowErrorNotification("Error inesperado al intentar cargar las categorias, se recargara la pagina");
+            this.ReloadPage(4000);
+        }
+    }
 
     private void UpdateCategory(ExpenseCategory category)
     {
@@ -45,8 +67,17 @@
     {
         this._isProcessingRequest = true;
 
-        await this.ExpenseCategoriesService.Delete(categorryId);
-
-        this._isProcessingRequest = false;
+        try
+        {
+            await this.ExpenseCategoriesService.Delete(categorryId);
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowErrorNotification("Error inesperado al intentar eliminar la categoria");
+        }
+        finally
+        {
+            this._isProcessingRequest = false;
+        }
     }
 }
