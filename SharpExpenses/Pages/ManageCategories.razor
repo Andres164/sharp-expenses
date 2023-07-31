@@ -33,6 +33,17 @@ else
                     </td>
                 </tr>
             }
+            <tr>
+                <td>  </td>
+                <td>
+                    <div style="white-space: nowrap">
+                        <MudTextField T="string">  </MudTextField>
+                        <button disabled="@this._isProcessingRequest" @onclick="async () => await this.AddNewCategory()" class="btn btn-danger">
+                            <span class="oi oi-plus"></span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
 }
@@ -44,6 +55,7 @@ else
 
     private bool _isProcessingRequest = false;
     private List<ExpenseCategory>? _categories;
+    private string _newCategoryName = "Nombre de la nueva categoria";
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,6 +68,11 @@ else
             this.NotificationService.ShowErrorNotification("Error inesperado al intentar cargar las categorias, se recargara la pagina");
             this.ReloadPage(4000);
         }
+    }
+
+    private async Task AddNewCategory()
+    {
+        
     }
 
     private void UpdateCategory(ExpenseCategory category)
