@@ -34,11 +34,12 @@ else
                 </tr>
             }
             <tr>
-                <td>  </td>
+                <td>
+                    <MudTextField @bind-Value=this._newCategoryName T="string"> </MudTextField>
+                </td>
                 <td>
                     <div style="white-space: nowrap">
-                        <MudTextField T="string">  </MudTextField>
-                        <button disabled="@this._isProcessingRequest" @onclick="async () => await this.AddNewCategory()" class="btn btn-danger">
+                        <button disabled="@this._isProcessingRequest" @onclick="async () => await this.AddNewCategory()" class="btn btn-primary">
                             <span class="oi oi-plus"></span>
                         </button>
                     </div>
@@ -72,7 +73,22 @@ else
 
     private async Task AddNewCategory()
     {
-        
+        var newCategoryViewModel = new ExpenseCategoryViewModel
+            {
+                ExpenseCategoryName = this._newCategoryName
+            };
+        try
+        {
+            ExpenseCategory createdCategory = await this.ExpenseCategoriesService.Create(newCategoryViewModel);
+            this._categories!.Add(createdCategory); // _categories can't be null as it is initialized in the OnInitializeAsync method
+            this._newCategoryName = "Nombre de la nueva categoria";
+            this.StateHasChanged();
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowErrorNotification("Error inesperado al intentar crear la nueva categoria");
+            throw;
+        }
     }
 
     private void UpdateCategory(ExpenseCategory category)
@@ -86,7 +102,12 @@ else
 
         try
         {
-            await this.ExpenseCategoriesService.Delete(categorryId);
+            ExpenseCategory? deletedCategory = await this.ExpenseCategoriesService.Delete(categorryId);
+            if (deletedCategory == null)
+                throw new Exception("Logic error when deliting category: the category wasn't found");
+            bool deleted = this._categories!.Remove(deletedCategory);
+            NotificationService.ShowNotification(deleted.ToString());
+            this.StateHasChanged();
         }
         catch (Exception)
         {

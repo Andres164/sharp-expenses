@@ -7,7 +7,7 @@ namespace SharpExpenses.Services.ApiServices.Contracts
     {
         Task<List<ExpenseCategory>> ReadAll();
         Task<ExpenseCategoryViewModel?> Read(int categoryId);
-        Task Create(ExpenseCategoryViewModel newCategory);
+        Task<ExpenseCategory> Create(ExpenseCategoryViewModel newCategory);
         Task<ExpenseCategory?> Update(int categoryId, ExpenseCategoryViewModel updatedCategory);
         Task<ExpenseCategory?> Delete(int categoryId);
     }

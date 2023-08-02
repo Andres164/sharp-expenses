@@ -1,4 +1,5 @@
-﻿using SharedModels.Models;
+﻿using Radzen;
+using SharedModels.Models;
 using SharedModels.Models.ViewModels;
 using SharpExpenses.Services.ApiServices.Contracts;
 using System.Net.Http.Json;
@@ -36,10 +37,12 @@ namespace SharpExpenses.Services.ApiServices
             return category;
         }
 
-        public async Task Create(ExpenseCategoryViewModel newCategory)
+        public async Task<ExpenseCategory> Create(ExpenseCategoryViewModel newCategory)
         {
             var response = await this._httpClient.PostAsJsonAsync(this.ControllerEndpoint, newCategory);
             response.EnsureSuccessStatusCode();
+            var createdCategory = await response.ReadAsync<ExpenseCategory>();
+            return createdCategory;
         }
 
         public async Task<ExpenseCategory?> Update(int categoryId, ExpenseCategoryViewModel updatedCategory)
