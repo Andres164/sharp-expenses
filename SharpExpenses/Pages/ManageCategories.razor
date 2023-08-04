@@ -105,8 +105,10 @@ else
             ExpenseCategory? deletedCategory = await this.ExpenseCategoriesService.Delete(categorryId);
             if (deletedCategory == null)
                 throw new Exception("Logic error when deliting category: the category wasn't found");
-            bool deleted = this._categories!.Remove(deletedCategory);
-            NotificationService.ShowNotification(deleted.ToString());
+
+            var deletedCategoryInList = this._categories!.FirstOrDefault(c => c.ExpenseCategoryId == categorryId);
+            if(deletedCategoryInList != null)
+                this._categories!.Remove(deletedCategoryInList);
             this.StateHasChanged();
         }
         catch (Exception)
