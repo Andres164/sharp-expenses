@@ -20,17 +20,35 @@ else
             @foreach (var category in this._categories)
             {
                 <tr>
-                    <td> @category.ExpenseCategoryName </td>
-                    <td>
-                        <div style="white-space: nowrap">
-                            <button disabled="@this._isProcessingRequest" @onclick="() => this.UpdateCategory(category)" class="btn btn-primary">
-                                <span class="oi oi-pencil"></span>
-                            </button>
-                            <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteCategory(category.ExpenseCategoryId)" class="btn btn-danger">
-                                <span class="oi oi-x"></span>
-                            </button>
-                        </div>
-                    </td>
+                    @if(this._categoryBeingModified == null || category.ExpenseCategoryId != this._categoryBeingModified)
+                    {
+                        <td> @category.ExpenseCategoryName </td>
+                        <td>
+                            <div style="white-space: nowrap">
+                                <button disabled="@this._isProcessingRequest" @onclick="() => this._categoryBeingModified = category.ExpenseCategoryId" class="btn btn-primary">
+                                    <span class="oi oi-pencil"></span>
+                                </button>
+                                <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteCategory(category.ExpenseCategoryId)" class="btn btn-danger">
+                                    <span class="oi oi-trash"></span>
+                                </button>
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        string modifiedCategoryName = category.ExpenseCategoryName;
+                        <td> <MudTextField @bind-Value=modifiedCategoryName T="string"> </MudTextField> </td>
+                        <td>
+                            <div style="white-space: nowrap">
+                                <button disabled="@this._isProcessingRequest" @onclick="async () => await this.UpdateCategory(category.ExpenseCategoryId, modifiedCategoryName)" class="btn btn-success">
+                                    <span class="oi oi-check"></span>
+                                </button>
+                                <button disabled="@this._isProcessingRequest" @onclick="() => this._categoryBeingModified = null" class="btn btn-danger">
+                                    <span class="oi oi-x"></span>
+                                </button>
+                            </div>
+                        </td>
+                    }
                 </tr>
             }
             <tr>
@@ -57,6 +75,7 @@ else
     private bool _isProcessingRequest = false;
     private List<ExpenseCategory>? _categories;
     private string _newCategoryName = "Nombre de la nueva categoria";
+    private int? _categoryBeingModified = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,13 +106,31 @@ else
         catch (Exception)
         {
             this.NotificationService.ShowErrorNotification("Error inesperado al intentar crear la nueva categoria");
-            throw;
         }
     }
 
-    private void UpdateCategory(ExpenseCategory category)
+    private async Task UpdateCategory(int categoryId, string updatedCategoryName)
     {
-
+        this._isProcessingRequest = true;
+        try
+        {
+            var modifiedCategoryView = new ExpenseCategoryViewModel
+                {
+                    ExpenseCategoryName = updatedCategoryName
+                };
+            var updatedCategory = await this.ExpenseCategoriesService.Update(categoryId, modifiedCategoryView);
+            if (updatedCategory == null)
+                throw new Exception("Unexpected exception, the category that was tried to be updated wasnt't found");
+        }
+        catch (Exception)
+        {
+            this.NotificationService.ShowErrorNotification("Error inesperado al intentar modificar la categoria");
+        }
+        finally
+        {
+            this._isProcessingRequest = false;
+            this._categoryBeingModified = null;
+        }
     }
 
     private async Task DeleteCategory(int categorryId)
