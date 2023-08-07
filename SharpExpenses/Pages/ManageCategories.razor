@@ -20,12 +20,12 @@ else
             @foreach (var category in this._categories)
             {
                 <tr>
-                    @if(this._categoryBeingModified == null || category.ExpenseCategoryId != this._categoryBeingModified)
+                    @if(this._categoryBeingModified == null || category.ExpenseCategoryId != this._categoryBeingModified.ExpenseCategoryId)
                     {
                         <td> @category.ExpenseCategoryName </td>
                         <td>
                             <div style="white-space: nowrap">
-                                <button disabled="@this._isProcessingRequest" @onclick="() => this._categoryBeingModified = category.ExpenseCategoryId" class="btn btn-primary">
+                                <button disabled="@this._isProcessingRequest" @onclick="() => this._categoryBeingModified = category" class="btn btn-primary">
                                     <span class="oi oi-pencil"></span>
                                 </button>
                                 <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteCategory(category.ExpenseCategoryId)" class="btn btn-danger">
@@ -36,11 +36,10 @@ else
                     }
                     else
                     {
-                        string modifiedCategoryName = category.ExpenseCategoryName;
-                        <td> <MudTextField @bind-Value=modifiedCategoryName T="string"> </MudTextField> </td>
+                        <td> <MudTextField @bind-Value=this._categoryBeingModified.ExpenseCategoryName T="string"> </MudTextField> </td>
                         <td>
                             <div style="white-space: nowrap">
-                                <button disabled="@this._isProcessingRequest" @onclick="async () => await this.UpdateCategory(category.ExpenseCategoryId, modifiedCategoryName)" class="btn btn-success">
+                                <button disabled="@this._isProcessingRequest" @onclick="async () => await this.UpdateCategory()" class="btn btn-success">
                                     <span class="oi oi-check"></span>
                                 </button>
                                 <button disabled="@this._isProcessingRequest" @onclick="() => this._categoryBeingModified = null" class="btn btn-danger">
@@ -75,7 +74,7 @@ else
     private bool _isProcessingRequest = false;
     private List<ExpenseCategory>? _categories;
     private string _newCategoryName = "Nombre de la nueva categoria";
-    private int? _categoryBeingModified = null;
+    private ExpenseCategory? _categoryBeingModified = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,16 +108,16 @@ else
         }
     }
 
-    private async Task UpdateCategory(int categoryId, string updatedCategoryName)
+    private async Task UpdateCategory()
     {
         this._isProcessingRequest = true;
         try
         {
             var modifiedCategoryView = new ExpenseCategoryViewModel
                 {
-                    ExpenseCategoryName = updatedCategoryName
+                    ExpenseCategoryName = this._categoryBeingModified!.ExpenseCategoryName
                 };
-            var updatedCategory = await this.ExpenseCategoriesService.Update(categoryId, modifiedCategoryView);
+            var updatedCategory = await this.ExpenseCategoriesService.Update(this._categoryBeingModified.ExpenseCategoryId, modifiedCategoryView);
             if (updatedCategory == null)
                 throw new Exception("Unexpected exception, the category that was tried to be updated wasnt't found");
         }
