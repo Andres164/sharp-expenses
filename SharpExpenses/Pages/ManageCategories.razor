@@ -25,7 +25,7 @@ else
                         <td> @category.ExpenseCategoryName </td>
                         <td>
                             <div style="white-space: nowrap">
-                                <button disabled="@this._isProcessingRequest" @onclick="() => this._categoryBeingModified = category" class="btn btn-primary">
+                                <button disabled="@this._isProcessingRequest" @onclick="() => this._categoryBeingModified = new ExpenseCategory(category)" class="btn btn-primary">
                                     <span class="oi oi-pencil"></span>
                                 </button>
                                 <button disabled="@this._isProcessingRequest" @onclick="async () => await this.DeleteCategory(category.ExpenseCategoryId)" class="btn btn-danger">
@@ -84,8 +84,8 @@ else
         }
         catch (Exception)
         {
-            this.NotificationService.ShowErrorNotification("Error inesperado al intentar cargar las categorias, se recargara la pagina");
-            this.ReloadPage(4000);
+            this.NotificationService.ShowErrorNotification("Error inesperado al intentar cargar las categorias, se recargara la pagina", 5000);
+            this.ReloadPage(5000);
         }
     }
 
@@ -120,6 +120,8 @@ else
             var updatedCategory = await this.ExpenseCategoriesService.Update(this._categoryBeingModified.ExpenseCategoryId, modifiedCategoryView);
             if (updatedCategory == null)
                 throw new Exception("Unexpected exception, the category that was tried to be updated wasnt't found");
+            var categoryInList = this._categories!.FirstOrDefault(c => c.ExpenseCategoryId == updatedCategory.ExpenseCategoryId);
+            categoryInList!.ExpenseCategoryName = updatedCategory.ExpenseCategoryName;
         }
         catch (Exception)
         {
