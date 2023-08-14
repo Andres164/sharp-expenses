@@ -10,5 +10,6 @@ namespace SharpExpenses.Services.ApiServices.Contracts
         Task<ExpenseCategory> Create(ExpenseCategoryViewModel newCategory);
         Task<ExpenseCategory?> Update(int categoryId, ExpenseCategoryViewModel updatedCategory);
         Task<ExpenseCategory?> Delete(int categoryId);
+        Task<bool> CanBeDeleted(int categoryId);
     }
 }

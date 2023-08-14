@@ -68,5 +68,13 @@ namespace SharpExpenses.Services.ApiServices
             var deletedCategory = await response.Content.ReadFromJsonAsync<ExpenseCategory>();
             return deletedCategory;
         }
+
+        public async Task<bool> CanBeDeleted(int categoryId)
+        {
+            var response = await this._httpClient.GetAsync($"{this.ControllerEndpoint}/canBeDeleted/{categoryId}");
+            response.EnsureSuccessStatusCode();
+            var canBeDeleted = await response.Content.ReadFromJsonAsync<bool>();
+            return canBeDeleted;
+        }
     }
 }

@@ -140,14 +140,20 @@ else
 
         try
         {
-            ExpenseCategory? deletedCategory = await this.ExpenseCategoriesService.Delete(categorryId);
-            if (deletedCategory == null)
-                throw new Exception("Logic error when deliting category: the category wasn't found");
+            var categoryCanBeDeleted = await this.ExpenseCategoriesService.CanBeDeleted(categorryId);
+            if(!categoryCanBeDeleted)
+                this.NotificationService.ShowNotification("Esta categria no puede ser eliminada ya que hay gastos registrados bajo esta", NotificationSeverity.Warning, 4000);
+            else
+            {
+                ExpenseCategory? deletedCategory = await this.ExpenseCategoriesService.Delete(categorryId);
+                if (deletedCategory == null)
+                    throw new Exception("Logic error when deliting category: the category wasn't found");
 
-            var deletedCategoryInList = this._categories!.FirstOrDefault(c => c.ExpenseCategoryId == categorryId);
-            if(deletedCategoryInList != null)
-                this._categories!.Remove(deletedCategoryInList);
-            this.StateHasChanged();
+                var deletedCategoryInList = this._categories!.FirstOrDefault(c => c.ExpenseCategoryId == categorryId);
+                if(deletedCategoryInList != null)
+                    this._categories!.Remove(deletedCategoryInList);
+                this.StateHasChanged();
+            }
         }
         catch (Exception)
         {
