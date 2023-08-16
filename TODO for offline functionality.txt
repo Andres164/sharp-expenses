@@ -1,0 +1,15 @@
+1- A Factory is needed for the services
+ - Authentication
+ - ExpenseCategories
+ - Expenses
+this factory must determine if it should create the service that works with a connection to the api
+or the one that works without a connection to the api.
+
+the factory will use the offline mode if: 
+- two tries at connecting to the API fails, the program will inform the user that its now in offline mode
+
+Register Expense
+
+1. 
+
+
