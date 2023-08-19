@@ -7,9 +7,9 @@ namespace SharpExpenses.Services.ApiServices
         protected readonly HttpClient _httpClient;
         protected abstract string ControllerEndpoint { get; }
 
-        public ApiServiceBase(IHttpClientFactory clientFactory)
+        public ApiServiceBase(HttpClient httpClient)
         {
-            this._httpClient = clientFactory.CreateClient("API");
+            this._httpClient = httpClient;
         }
     }
 }
