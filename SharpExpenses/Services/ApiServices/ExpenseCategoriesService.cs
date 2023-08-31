@@ -10,8 +10,8 @@ namespace SharpExpenses.Services.ApiServices
     {
         protected override string ControllerEndpoint => "api/ExpenseCategories";
 
-        public ExpenseCategoriesService(IHttpClientFactory httpClientFactory)
-            : base(httpClientFactory)
+        public ExpenseCategoriesService(HttpClient httpClient)
+            : base(httpClient)
         {
 
         }

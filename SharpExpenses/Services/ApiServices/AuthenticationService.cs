@@ -8,8 +8,8 @@ namespace SharpExpenses.Services.ApiServices
     {
         protected override string ControllerEndpoint => "api/Authentication";
 
-        public AuthenticationService(IHttpClientFactory httpClientFactory) 
-            : base(httpClientFactory)
+        public AuthenticationService(HttpClient httpClient) 
+            : base(httpClient)
         {
         }
 
