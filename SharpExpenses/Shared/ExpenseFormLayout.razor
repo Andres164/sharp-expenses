@@ -47,7 +47,7 @@
 
         <div class="form-group">
             <label for="Date">Fecha y hora</label>
-            <RadzenDatePicker ShowTime="true" HourFormat="12" id="Date" @bind-Value="this._formExpense.DateInLocalTime" class="form-control" />
+            <RadzenDatePicker DateFormat="dd/MMM/yyyy H:mm" ShowTime="true" HourFormat="24" id="Date" @bind-Value="this._formExpense.DateInLocalTime" class="form-control" />
         </div>
 
         <div class="form-group">
